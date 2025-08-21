@@ -108,7 +108,10 @@ export default function UserProfilePage() {
           <CardContent className="pt-6">
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               <Avatar className="w-24 h-24">
-                <AvatarImage src={user.photoUrl || undefined} />
+                <AvatarImage 
+                  src={user.photoUrl || undefined} 
+                  alt={`Profile photo of ${user.username}`}
+                />
                 <AvatarFallback className="text-2xl">
                   {user.username[0].toUpperCase()}
                 </AvatarFallback>
@@ -156,7 +159,10 @@ export default function UserProfilePage() {
                     <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
                       <CardHeader className="text-center pb-3">
                         <Avatar className="w-16 h-16 mx-auto mb-3">
-                          <AvatarImage src={hg.photoUrl || undefined} />
+                          <AvatarImage 
+                            src={hg.photoUrl || undefined} 
+                            alt={`Photo of ${hg.firstName} ${hg.lastName}`}
+                          />
                           <AvatarFallback>
                             {hg.firstName[0]}{hg.lastName[0]}
                           </AvatarFallback>

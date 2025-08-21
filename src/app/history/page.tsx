@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { Crown, Shield, Zap, Users, Calendar, Clock } from 'lucide-react'
+import { WeekPanelSkeleton } from '@/components/ui/skeleton'
 import { Week } from '@/types'
 
 export default function HistoryPage() {
@@ -27,7 +28,7 @@ export default function HistoryPage() {
         const houseguestsData = await houseguestsResponse.json()
         
         const houseguestsMap: Record<string, { firstName: string; lastName: string }> = {}
-        houseguestsData.forEach((hg: any) => {
+        houseguestsData.forEach((hg: { id: string; firstName: string; lastName: string }) => {
           houseguestsMap[hg.id] = { firstName: hg.firstName, lastName: hg.lastName }
         })
         setHouseguests(houseguestsMap)
@@ -60,9 +61,19 @@ export default function HistoryPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading season history...</p>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Season History
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Loading competition results...
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto space-y-4">
+            {Array.from({ length: 4 }).map((_, index) => (
+              <WeekPanelSkeleton key={index} />
+            ))}
           </div>
         </div>
       </div>
@@ -95,7 +106,7 @@ export default function HistoryPage() {
           </Card>
         ) : (
           <div className="max-w-4xl mx-auto">
-            <Accordion type="single" collapsible className="space-y-4">
+            <Accordion type="single" collapsible className="space-y-4" role="region" aria-label="Weekly competition history">
               {weeks.map((week) => {
                 const hasData = week.hohCompetition || week.hohWinnerId || week.nominees?.length || 
                                week.povCompetition || week.povWinnerId || week.blockbusterCompetition || 
@@ -103,7 +114,10 @@ export default function HistoryPage() {
 
                 return (
                   <AccordionItem key={week.week} value={`week-${week.week}`} className="border rounded-lg">
-                    <AccordionTrigger className="px-6 py-4 hover:no-underline">
+                    <AccordionTrigger 
+                      className="px-6 py-4 hover:no-underline focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                      aria-label={`Week ${week.week} competition results - ${hasData ? 'has data' : 'no data yet'}`}
+                    >
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-2">
@@ -167,7 +181,7 @@ export default function HistoryPage() {
                               </CardHeader>
                               <CardContent>
                                 <div className="flex flex-wrap gap-2">
-                                  {week.nominees.map((nomineeId, index) => (
+                                  {week.nominees.map((nomineeId) => (
                                     nomineeId && (
                                       <Badge key={nomineeId} variant="outline" className="text-red-700 border-red-300">
                                         {getHouseguestName(nomineeId)}

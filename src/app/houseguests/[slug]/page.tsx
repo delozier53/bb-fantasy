@@ -96,7 +96,10 @@ export default function HouseguestProfilePage() {
           <Card className="md:col-span-1">
             <CardHeader className="text-center">
               <Avatar className="w-32 h-32 mx-auto mb-4">
-                <AvatarImage src={houseguest.photoUrl || undefined} />
+                <AvatarImage 
+                  src={houseguest.photoUrl || undefined} 
+                  alt={`Photo of ${houseguest.firstName} ${houseguest.lastName}`}
+                />
                 <AvatarFallback className="text-2xl">
                   {houseguest.firstName[0]}{houseguest.lastName[0]}
                 </AvatarFallback>

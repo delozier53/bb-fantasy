@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Search } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
+import { HouseguestCardSkeleton } from '@/components/ui/skeleton'
 
 export default function HouseguestsPage() {
   const [houseguests, setHouseguests] = useState<Houseguest[]>([])
@@ -43,9 +44,19 @@ export default function HouseguestsPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading houseguests...</p>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Houseguests
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Loading contestants...
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, index) => (
+              <HouseguestCardSkeleton key={index} />
+            ))}
           </div>
         </div>
       </div>
@@ -65,18 +76,19 @@ export default function HouseguestsPage() {
         </div>
 
         {/* Search and Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto">
+        <div className="flex flex-col sm:flex-row gap-4 mb-8 max-w-2xl mx-auto" role="search" aria-label="Search and filter houseguests">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" aria-hidden="true" />
             <Input
               placeholder="Search houseguests..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
+              aria-label="Search houseguests by name"
             />
           </div>
           <Select value={statusFilter} onValueChange={(value: 'ALL' | 'IN' | 'EVICTED') => setStatusFilter(value)}>
-            <SelectTrigger className="w-full sm:w-48">
+            <SelectTrigger className="w-full sm:w-48" aria-label="Filter houseguests by status">
               <SelectValue placeholder="Filter by status" />
             </SelectTrigger>
             <SelectContent>
@@ -88,17 +100,28 @@ export default function HouseguestsPage() {
         </div>
 
         {/* Houseguests Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div 
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+          role="grid"
+          aria-label="Houseguests list"
+        >
           {filteredHouseguests.map((hg) => {
             const totalPoints = pointsForHG(hg)
             const totalWins = hg.wins.hoh.length + hg.wins.pov.length + hg.wins.blockbuster.length
 
             return (
-              <Link key={hg.id} href={`/houseguests/${hg.slug}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full">
+              <Link 
+                key={hg.id} 
+                href={`/houseguests/${hg.slug}`}
+                aria-label={`View profile for ${hg.firstName} ${hg.lastName} - ${totalPoints} points, ${hg.status === 'IN' ? 'still in game' : 'evicted'}`}
+              >
+                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full focus-within:ring-2 focus-within:ring-blue-500 focus-within:outline-none">
                   <CardHeader className="text-center pb-2">
                     <Avatar className="w-20 h-20 mx-auto mb-3">
-                      <AvatarImage src={hg.photoUrl || undefined} />
+                      <AvatarImage 
+                        src={hg.photoUrl || undefined} 
+                        alt={`Photo of ${hg.firstName} ${hg.lastName}`}
+                      />
                       <AvatarFallback className="text-lg">
                         {hg.firstName[0]}{hg.lastName[0]}
                       </AvatarFallback>

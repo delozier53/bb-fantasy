@@ -109,7 +109,7 @@ export default function WelcomePage() {
 
       setStep(2)
       toast.success('Profile created successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to create profile. Please try again.')
     }
   }
@@ -148,7 +148,7 @@ export default function WelcomePage() {
 
       toast.success('Your picks have been saved!')
       router.push('/leaderboard')
-    } catch (error) {
+    } catch {
       toast.error('Failed to save picks. Please try again.')
     }
   }
@@ -233,7 +233,10 @@ export default function WelcomePage() {
                   >
                     <div className="text-center">
                       <Avatar className="w-16 h-16 mx-auto mb-2">
-                        <AvatarImage src={hg.photoUrl || undefined} />
+                        <AvatarImage 
+                          src={hg.photoUrl || undefined} 
+                          alt={`Photo of ${hg.firstName} ${hg.lastName}`}
+                        />
                         <AvatarFallback>
                           {hg.firstName[0]}{hg.lastName[0]}
                         </AvatarFallback>

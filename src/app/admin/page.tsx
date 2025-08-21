@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -48,18 +48,7 @@ export default function AdminPage() {
     photoUrl: '',
   })
 
-  useEffect(() => {
-    if (status === 'loading') return
-
-    if (!session?.user?.isAdmin) {
-      router.push('/')
-      return
-    }
-
-    fetchData()
-  }, [session, status, router])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true)
       const [houseguestsRes, weeksRes] = await Promise.all([
@@ -101,7 +90,18 @@ export default function AdminPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [selectedWeek])
+
+  useEffect(() => {
+    if (status === 'loading') return
+
+    if (!session?.user?.isAdmin) {
+      router.push('/')
+      return
+    }
+
+    fetchData()
+  }, [session, status, router, fetchData])
 
   const handleWeekChange = (weekNumber: number) => {
     setSelectedWeek(weekNumber)

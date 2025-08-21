@@ -3,13 +3,14 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { withRateLimit } from '@/lib/rate-limit'
 
 const createUserSchema = z.object({
   username: z.string().min(3).max(20),
   photoUrl: z.string().url().nullable().optional(),
 })
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
@@ -69,7 +70,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function POST(request: NextRequest) {
+  return withRateLimit(request, handlePOST, { limit: 5, window: 60 })
+}
+
+async function handleGET() {
   try {
     const session = await getServerSession(authOptions)
     
@@ -107,4 +112,8 @@ export async function GET() {
       { status: 500 }
     )
   }
+}
+
+export async function GET(request: NextRequest) {
+  return withRateLimit(request, async () => handleGET(), { limit: 30, window: 60 })
 }

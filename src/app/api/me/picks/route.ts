@@ -3,12 +3,13 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+import { withRateLimit } from '@/lib/rate-limit'
 
 const updatePicksSchema = z.object({
   picks: z.array(z.string()).length(5, 'Must select exactly 5 houseguests'),
 })
 
-export async function POST(request: NextRequest) {
+async function handlePOST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
     
@@ -83,4 +84,8 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+export async function POST(request: NextRequest) {
+  return withRateLimit(request, handlePOST, { limit: 3, window: 60 })
 }

@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Trophy, Medal, Award } from 'lucide-react'
+import { LeaderboardRowSkeleton } from '@/components/ui/skeleton'
 import { LeaderboardEntry } from '@/types'
 
 export default function LeaderboardPage() {
@@ -42,26 +43,25 @@ export default function LeaderboardPage() {
     }
   }
 
-  const getRankBadgeColor = (rank: number) => {
-    switch (rank) {
-      case 1:
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
-      case 2:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
-      case 3:
-        return 'bg-amber-100 text-amber-800 border-amber-200'
-      default:
-        return 'bg-blue-100 text-blue-800 border-blue-200'
-    }
-  }
+
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading leaderboard...</p>
+          <div className="text-center mb-12">
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Leaderboard
+            </h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Loading rankings...
+            </p>
+          </div>
+          
+          <div className="max-w-4xl mx-auto space-y-4">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <LeaderboardRowSkeleton key={index} />
+            ))}
           </div>
         </div>
       </div>
@@ -109,7 +109,10 @@ export default function LeaderboardPage() {
                       </div>
                       <Link href={`/u/${leaderboard[1].username}`}>
                         <Avatar className="w-16 h-16 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-gray-300 transition-all">
-                          <AvatarImage src={leaderboard[1].photoUrl || undefined} />
+                          <AvatarImage 
+                            src={leaderboard[1].photoUrl || undefined} 
+                            alt={`Profile photo of ${leaderboard[1].username}`}
+                          />
                           <AvatarFallback>
                             {leaderboard[1].username[0].toUpperCase()}
                           </AvatarFallback>
@@ -134,7 +137,10 @@ export default function LeaderboardPage() {
                       </div>
                       <Link href={`/u/${leaderboard[0].username}`}>
                         <Avatar className="w-20 h-20 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-yellow-300 transition-all">
-                          <AvatarImage src={leaderboard[0].photoUrl || undefined} />
+                          <AvatarImage 
+                            src={leaderboard[0].photoUrl || undefined} 
+                            alt={`Profile photo of ${leaderboard[0].username}`}
+                          />
                           <AvatarFallback>
                             {leaderboard[0].username[0].toUpperCase()}
                           </AvatarFallback>
@@ -159,7 +165,10 @@ export default function LeaderboardPage() {
                       </div>
                       <Link href={`/u/${leaderboard[2].username}`}>
                         <Avatar className="w-16 h-16 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-amber-300 transition-all">
-                          <AvatarImage src={leaderboard[2].photoUrl || undefined} />
+                          <AvatarImage 
+                            src={leaderboard[2].photoUrl || undefined} 
+                            alt={`Profile photo of ${leaderboard[2].username}`}
+                          />
                           <AvatarFallback>
                             {leaderboard[2].username[0].toUpperCase()}
                           </AvatarFallback>
@@ -195,7 +204,10 @@ export default function LeaderboardPage() {
                           
                           <Link href={`/u/${entry.username}`}>
                             <Avatar className="w-12 h-12 cursor-pointer hover:ring-2 hover:ring-blue-300 transition-all">
-                              <AvatarImage src={entry.photoUrl || undefined} />
+                              <AvatarImage 
+                                src={entry.photoUrl || undefined} 
+                                alt={`Profile photo of ${entry.username}`}
+                              />
                               <AvatarFallback>
                                 {entry.username[0].toUpperCase()}
                               </AvatarFallback>
