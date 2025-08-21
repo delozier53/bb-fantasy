@@ -86,11 +86,11 @@ export default function HouseguestProfilePage() {
       <div className="mobile-container">
         {/* Back Button */}
         <div className="pt-4 pb-4">
-          <Link href="/houseguests">
-            <Button variant="ghost" className="text-blue-400 hover:bg-blue-400/10 p-2 h-auto">
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
-          </Link>
+                      <Link href="/houseguests">
+              <Button variant="outline" className="text-blue-400 border-blue-400/30 hover:bg-blue-400/10 p-2 h-auto">
+                <ArrowLeft className="w-6 h-6" />
+              </Button>
+            </Link>
         </div>
 
         {/* Profile Header */}
@@ -173,6 +173,28 @@ export default function HouseguestProfilePage() {
             </CardContent>
           </Card>
 
+          {/* Eviction Info */}
+          {houseguest.status === 'EVICTED' && houseguest.eviction && (
+            <Card className="navy-card border-red-400/30">
+              <CardHeader>
+                <CardTitle className="text-white">
+                  Eviction Info
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center p-4">
+                  <div className="text-2xl font-bold text-red-400 mb-1">
+                    Week {houseguest.eviction.week}
+                  </div>
+                  <div className="text-lg text-red-300 mb-1">
+                    {houseguest.eviction.vote} votes
+                  </div>
+                  <div className="text-sm text-white/80">Evicted</div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Bio */}
           {houseguest.bio && (
             <Card className="navy-card">
@@ -209,26 +231,7 @@ export default function HouseguestProfilePage() {
             </Card>
           )}
 
-          {/* Eviction Info */}
-          {houseguest.status === 'EVICTED' && houseguest.eviction && (
-            <Card className="navy-card border-red-400/30">
-              <CardHeader>
-                <CardTitle className="text-red-300">Eviction Info</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-white/80">Week:</span>
-                    <span className="text-red-300 font-semibold">{houseguest.eviction.week}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-white/80">Vote:</span>
-                    <span className="text-red-300 font-semibold">{houseguest.eviction.vote}</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+
         </div>
       </div>
     </div>
