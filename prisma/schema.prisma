@@ -75,16 +75,16 @@ model Week {
   id                     String   @id @default(uuid())
   week                   Int      @unique
   hohCompetition         String?
-  hohWinnerId            String?  @db.Uuid
+  hohWinnerId            String?
   nominees               String[] @default([]) // 3 ids
   povCompetition         String?
-  povWinnerId            String?  @db.Uuid
+  povWinnerId            String?
   povUsed                Boolean?
-  povRemovedNomineeId    String?  @db.Uuid
-  povReplacementId       String?  @db.Uuid
+  povRemovedNomineeId    String?
+  povReplacementId       String?
   blockbusterCompetition String?
-  blockbusterWinnerId    String?  @db.Uuid
-  evictedNomineeId       String?  @db.Uuid
+  blockbusterWinnerId    String?
+  evictedNomineeId       String?
   evictionVote           String?
   updatedAt              DateTime @updatedAt
 
