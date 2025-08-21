@@ -1,0 +1,52 @@
+# CodeRabbit Configuration
+# This file helps CodeRabbit understand your project structure and provide better debugging insights
+
+project:
+  name: "Big Brother Fantasy League"
+  description: "A fantasy sports application for Big Brother Season 27"
+  type: "nextjs-typescript"
+
+# Focus areas for debugging and review
+focus_areas:
+  - "API endpoints and data validation"
+  - "Authentication and security"
+  - "Database queries and Prisma usage"
+  - "React components and state management"
+  - "TypeScript type safety"
+  - "Error handling and edge cases"
+
+# Files to prioritize for review
+priority_files:
+  - "src/app/api/**/*.ts"
+  - "src/lib/auth.ts"
+  - "src/lib/prisma.ts"
+  - "src/types/index.ts"
+  - "prisma/schema.prisma"
+
+# Files to exclude from review
+exclude_patterns:
+  - "node_modules/**"
+  - ".next/**"
+  - "dist/**"
+  - "build/**"
+  - "*.log"
+  - ".env*"
+
+# Custom instructions for CodeRabbit
+instructions: |
+  This is a Next.js 14 application with TypeScript, Prisma ORM, and NextAuth.js.
+  Please focus on:
+  1. Security vulnerabilities in API routes
+  2. TypeScript type safety issues
+  3. Database query optimization
+  4. Authentication flow security
+  5. Error handling patterns
+  6. Code organization and best practices
+
+# Review settings
+review:
+  max_files_per_review: 50
+  include_comments: true
+  suggest_fixes: true
+  check_security: true
+  check_performance: true
