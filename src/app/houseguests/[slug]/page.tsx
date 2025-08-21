@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Key, RotateCcw, Trophy, Target, Circle } from 'lucide-react'
+import { ArrowLeft, Key, RotateCcw, Trophy, Target, Circle, Minus } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
 
 export default function HouseguestProfilePage() {
@@ -116,7 +116,7 @@ export default function HouseguestProfilePage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="space-y-4 mb-8">
+        <div className="space-y-4 mb-8 pb-6">
           {/* HOH Wins */}
           <Card className="navy-card">
             <CardHeader>
@@ -144,7 +144,10 @@ export default function HouseguestProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="text-center p-4">
-                <Circle className="w-10 h-10 text-blue-400 mx-auto mb-1" />
+                <div className="relative w-10 h-10 mx-auto mb-1">
+                  <Circle className="w-10 h-10 text-blue-400" />
+                  <Minus className="w-8 h-8 text-blue-400 absolute top-1 left-1" />
+                </div>
                 <div className="text-2xl font-bold text-blue-400 mb-1">
                   {houseguest.wins.pov.length > 0 ? houseguest.wins.pov.join(', ') : 'No Wins'}
                 </div>
