@@ -71,7 +71,7 @@ export default function HouseguestsPage() {
           {/* In the House Section */}
           <div>
             <h2 className="text-xl font-bold text-white mb-4">In the House</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredHouseguests
                 .filter(hg => hg.status === 'IN')
                 .sort((a, b) => {
@@ -163,7 +163,7 @@ export default function HouseguestsPage() {
           {/* In Jury Section */}
           <div>
             <h2 className="text-xl font-bold text-white mb-4">In Jury</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredHouseguests
                 .filter(hg => hg.status === 'JURY')
                 .sort((a, b) => {
@@ -255,7 +255,7 @@ export default function HouseguestsPage() {
           {/* Not in Jury Section */}
           <div>
             <h2 className="text-xl font-bold text-white mb-4">Not in Jury</h2>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {filteredHouseguests
                 .filter(hg => hg.status === 'EVICTED')
                 .sort((a, b) => {
