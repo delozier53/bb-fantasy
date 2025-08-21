@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Crown, Shield, Zap, Trophy, Target } from 'lucide-react'
+import { ArrowLeft, Key, Minus, RotateCcw, Trophy, Target } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
 
 export default function HouseguestProfilePage() {
@@ -117,54 +117,74 @@ export default function HouseguestProfilePage() {
 
         {/* Stats Cards */}
         <div className="space-y-4 mb-8">
-          {/* Competition Wins */}
+          {/* HOH Wins */}
           <Card className="navy-card">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
-                <Trophy className="w-5 h-5 gold-text" />
-                Competition Wins
+                <Key className="w-5 h-5 text-amber-400" />
+                HOH Wins
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
-                  <Crown className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold gold-text">
-                    {houseguest.wins.hoh.length}
-                  </div>
-                  <div className="text-sm text-white/80">HOH</div>
-                  {houseguest.wins.hoh.length > 0 && (
-                    <div className="text-xs text-amber-300 mt-1">
-                      Weeks: {houseguest.wins.hoh.join(', ')}
-                    </div>
-                  )}
+              <div className="text-center p-6">
+                <Key className="w-12 h-12 text-amber-400 mx-auto mb-3" />
+                <div className="text-4xl font-bold gold-text mb-2">
+                  {houseguest.wins.hoh.length}
                 </div>
+                <div className="text-lg text-white/80 mb-3">Head of Household</div>
+                {houseguest.wins.hoh.length > 0 && (
+                  <div className="text-sm text-amber-300">
+                    Weeks: {houseguest.wins.hoh.join(', ')}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
-                  <Shield className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold gold-text">
-                    {houseguest.wins.pov.length}
-                  </div>
-                  <div className="text-sm text-white/80">POV</div>
-                  {houseguest.wins.pov.length > 0 && (
-                    <div className="text-xs text-amber-300 mt-1">
-                      Weeks: {houseguest.wins.pov.join(', ')}
-                    </div>
-                  )}
+          {/* POV Wins */}
+          <Card className="navy-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Minus className="w-5 h-5 text-blue-400" />
+                POV Wins
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center p-6">
+                <Minus className="w-12 h-12 text-blue-400 mx-auto mb-3" />
+                <div className="text-4xl font-bold text-blue-400 mb-2">
+                  {houseguest.wins.pov.length}
                 </div>
+                <div className="text-lg text-white/80 mb-3">Power of Veto</div>
+                {houseguest.wins.pov.length > 0 && (
+                  <div className="text-sm text-blue-300">
+                    Weeks: {houseguest.wins.pov.join(', ')}
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
 
-                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
-                  <Zap className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold gold-text">
-                    {houseguest.wins.blockbuster.length}
-                  </div>
-                  <div className="text-sm text-white/80">BB</div>
-                  {houseguest.wins.blockbuster.length > 0 && (
-                    <div className="text-xs text-amber-300 mt-1">
-                      Weeks: {houseguest.wins.blockbuster.join(', ')}
-                    </div>
-                  )}
+          {/* Blockbuster Wins */}
+          <Card className="navy-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <RotateCcw className="w-5 h-5 text-purple-400" />
+                Blockbuster Wins
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center p-6">
+                <RotateCcw className="w-12 h-12 text-purple-400 mx-auto mb-3" />
+                <div className="text-4xl font-bold text-purple-400 mb-2">
+                  {houseguest.wins.blockbuster.length}
                 </div>
+                <div className="text-lg text-white/80 mb-3">Blockbuster</div>
+                {houseguest.wins.blockbuster.length > 0 && (
+                  <div className="text-sm text-purple-300">
+                    Weeks: {houseguest.wins.blockbuster.join(', ')}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
