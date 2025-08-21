@@ -87,9 +87,8 @@ export default function HouseguestProfilePage() {
         {/* Back Button */}
         <div className="pt-6 pb-4">
           <Link href="/houseguests">
-            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Houseguests
+            <Button variant="ghost" className="text-blue-400 hover:bg-blue-400/10 p-2 h-auto">
+              <ArrowLeft className="w-6 h-6" />
             </Button>
           </Link>
         </div>
