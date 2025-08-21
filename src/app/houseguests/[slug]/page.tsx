@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Key, RotateCcw, Trophy, Target } from 'lucide-react'
+import { ArrowLeft, Key, RotateCcw, Trophy, Target, Minus } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
 
 export default function HouseguestProfilePage() {
@@ -125,8 +125,8 @@ export default function HouseguestProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center p-6">
-                <Key className="w-12 h-12 text-amber-400 mx-auto mb-3" />
+              <div className="text-center p-4">
+                <Key className="w-12 h-12 text-amber-400 mx-auto mb-2" />
                 <div className="text-4xl font-bold text-amber-400 mb-2">
                   {houseguest.wins.hoh.length > 0 ? houseguest.wins.hoh.join(', ') : 'No Wins'}
                 </div>
@@ -143,8 +143,8 @@ export default function HouseguestProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center p-6">
-                <div className="w-12 h-12 mx-auto mb-3 text-4xl" style={{ color: '#60a5fa' }}>🚫</div>
+              <div className="text-center p-4">
+                <Minus className="w-12 h-12 text-blue-400 mx-auto mb-2" />
                 <div className="text-4xl font-bold text-blue-400 mb-2">
                   {houseguest.wins.pov.length > 0 ? houseguest.wins.pov.join(', ') : 'No Wins'}
                 </div>
@@ -161,8 +161,8 @@ export default function HouseguestProfilePage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center p-6">
-                <RotateCcw className="w-12 h-12 text-purple-400 mx-auto mb-3" />
+              <div className="text-center p-4">
+                <RotateCcw className="w-12 h-12 text-purple-400 mx-auto mb-2" />
                 <div className="text-4xl font-bold text-purple-400 mb-2">
                   {houseguest.wins.blockbuster.length > 0 ? houseguest.wins.blockbuster.join(', ') : 'No Wins'}
                 </div>
