@@ -2,20 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Input } from '@/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Search } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
-import { HouseguestCardSkeleton } from '@/components/ui/skeleton'
 
 export default function HouseguestsPage() {
   const [houseguests, setHouseguests] = useState<Houseguest[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [statusFilter, setStatusFilter] = useState<'ALL' | 'IN' | 'EVICTED'>('ALL')
 
   useEffect(() => {
     const fetchHouseguests = async () => {
@@ -34,28 +27,29 @@ export default function HouseguestsPage() {
     fetchHouseguests()
   }, [])
 
-  const filteredHouseguests = houseguests.filter(hg => {
-    const matchesSearch = `${hg.firstName} ${hg.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === 'ALL' || hg.status === statusFilter
-    return matchesSearch && matchesStatus
-  })
+  const filteredHouseguests = houseguests
 
   if (loading) {
     return (
       <div className="min-h-screen navy-gradient">
-        <div className="container mx-auto mobile-container py-8 sm:py-12">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+        <div className="px-4 py-6">
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-white mb-4">
               Houseguests
             </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Loading contestants...
-            </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="space-y-3">
             {Array.from({ length: 8 }).map((_, index) => (
-              <HouseguestCardSkeleton key={index} />
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 animate-pulse">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-full"></div>
+                  <div className="flex-1">
+                    <div className="h-4 bg-white/20 rounded w-24 mb-2"></div>
+                    <div className="h-3 bg-white/20 rounded w-16"></div>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -65,44 +59,17 @@ export default function HouseguestsPage() {
 
   return (
     <div className="min-h-screen navy-gradient">
-      <div className="container mx-auto mobile-container py-8 sm:py-12">
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-4">
-            Season 27 Houseguests
+      <div className="px-4 py-6">
+        <div className="text-center mb-6">
+          <h1 className="text-3xl font-bold text-white">
+            Houseguests
           </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Browse all contestants and their competition stats
-          </p>
         </div>
 
-        {/* Search and Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8 sm:mb-12 max-w-2xl mx-auto" role="search" aria-label="Search and filter houseguests">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 h-4 w-4" aria-hidden="true" />
-            <Input
-              placeholder="Search houseguests..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 bg-white/90 backdrop-blur-sm border-slate-200"
-              aria-label="Search houseguests by name"
-            />
-          </div>
-          <Select value={statusFilter} onValueChange={(value: 'ALL' | 'IN' | 'EVICTED') => setStatusFilter(value)}>
-            <SelectTrigger className="w-full sm:w-48 bg-white/90 backdrop-blur-sm border-slate-200" aria-label="Filter houseguests by status">
-              <SelectValue placeholder="Filter by status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="ALL">All Houseguests</SelectItem>
-              <SelectItem value="IN">Still In Game</SelectItem>
-              <SelectItem value="EVICTED">Evicted</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Houseguests Grid */}
+        {/* Houseguests List */}
         <div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
-          role="grid"
+          className="space-y-3"
+          role="list"
           aria-label="Houseguests list"
         >
           {filteredHouseguests.map((hg) => {
@@ -115,64 +82,80 @@ export default function HouseguestsPage() {
                 href={`/houseguests/${hg.slug}`}
                 aria-label={`View profile for ${hg.firstName} ${hg.lastName} - ${totalPoints} points, ${hg.status === 'IN' ? 'still in game' : 'evicted'}`}
               >
-                <Card className="navy-card hover:scale-105 transition-all duration-300 cursor-pointer h-full group">
-                  <CardHeader className="text-center pb-2">
-                    <Avatar className="w-20 h-20 mx-auto mb-3 ring-2 ring-amber-200 group-hover:ring-amber-300 transition-colors">
+                <div className="bg-white/95 backdrop-blur-sm rounded-lg p-4 hover:bg-white transition-all duration-200 active:scale-98 cursor-pointer">
+                  <div className="flex items-center space-x-4">
+                    {/* Avatar */}
+                    <Avatar className="w-12 h-12 ring-2 ring-amber-200">
                       <AvatarImage 
                         src={hg.photoUrl || undefined} 
                         alt={`Photo of ${hg.firstName} ${hg.lastName}`}
                       />
-                      <AvatarFallback className="text-lg bg-amber-100 text-amber-800">
+                      <AvatarFallback className="text-sm bg-amber-100 text-amber-800">
                         {hg.firstName[0]}{hg.lastName[0]}
                       </AvatarFallback>
                     </Avatar>
-                    <CardTitle className="text-lg navy-text">
-                      {hg.firstName} {hg.lastName}
-                    </CardTitle>
-                    <div className="flex justify-center">
-                      <Badge variant={hg.status === 'IN' ? 'default' : 'secondary'} className={hg.status === 'IN' ? 'gold-accent' : ''}>
-                        {hg.status === 'IN' ? 'In Game' : 'Evicted'}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-slate-600">Total Points:</span>
-                        <span className="font-semibold gold-text">{totalPoints}</span>
+                    
+                    {/* Name and Status */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-semibold text-slate-800 truncate">
+                          {hg.firstName} {hg.lastName}
+                        </h3>
+                        <Badge 
+                          variant={hg.status === 'IN' ? 'default' : 'secondary'} 
+                          className={`text-xs ${hg.status === 'IN' ? 'gold-accent' : ''}`}
+                        >
+                          {hg.status === 'IN' ? 'In Game' : 'Evicted'}
+                        </Badge>
                       </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-600">Competition Wins:</span>
-                        <span className="font-semibold gold-text">{totalWins}</span>
+                      
+                      {/* Stats */}
+                      <div className="flex items-center space-x-4 text-sm">
+                        <span className="text-slate-600">
+                          <span className="font-medium gold-text">{totalPoints}</span> pts
+                        </span>
+                        <span className="text-slate-600">
+                          <span className="font-medium gold-text">{totalWins}</span> wins
+                        </span>
                       </div>
                       
                       {/* Win Badges */}
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {hg.wins.hoh.length > 0 && (
-                          <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
-                            HOH ×{hg.wins.hoh.length}
-                          </Badge>
-                        )}
-                        {hg.wins.pov.length > 0 && (
-                          <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
-                            POV ×{hg.wins.pov.length}
-                          </Badge>
-                        )}
-                        {hg.wins.blockbuster.length > 0 && (
-                          <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
-                            Blockbuster ×{hg.wins.blockbuster.length}
-                          </Badge>
-                        )}
-                      </div>
-
-                      {hg.status === 'EVICTED' && hg.eviction && (
-                        <div className="text-xs text-slate-500 mt-2">
-                          Evicted Week {hg.eviction.week}
+                      {(hg.wins.hoh.length > 0 || hg.wins.pov.length > 0 || hg.wins.blockbuster.length > 0) && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {hg.wins.hoh.length > 0 && (
+                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                              HOH ×{hg.wins.hoh.length}
+                            </Badge>
+                          )}
+                          {hg.wins.pov.length > 0 && (
+                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                              POV ×{hg.wins.pov.length}
+                            </Badge>
+                          )}
+                          {hg.wins.blockbuster.length > 0 && (
+                            <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                              BB ×{hg.wins.blockbuster.length}
+                            </Badge>
+                          )}
                         </div>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
+                    
+                    {/* Arrow indicator */}
+                    <div className="text-slate-400">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Eviction info */}
+                  {hg.status === 'EVICTED' && hg.eviction && (
+                    <div className="text-xs text-slate-500 mt-2 ml-16">
+                      Evicted Week {hg.eviction.week}
+                    </div>
+                  )}
+                </div>
               </Link>
             )
           })}

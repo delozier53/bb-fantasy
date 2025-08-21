@@ -15,6 +15,11 @@ export function AppHeader() {
   const pathname = usePathname()
   const title = pageTitles[pathname] || 'BB Fantasy'
 
+  // Hide header on houseguests page since it has its own title
+  if (pathname === '/houseguests') {
+    return null
+  }
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-slate-200 safe-top">
       <div className="flex items-center justify-between px-4 py-3">
