@@ -85,7 +85,7 @@ export default function HouseguestProfilePage() {
     <div className="min-h-screen navy-gradient">
       <div className="mobile-container">
         {/* Back Button */}
-        <div className="pt-6 pb-4">
+        <div className="pt-4 pb-4">
           <Link href="/houseguests">
             <Button variant="ghost" className="text-blue-400 hover:bg-blue-400/10 p-2 h-auto">
               <ArrowLeft className="w-6 h-6" />
