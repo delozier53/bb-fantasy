@@ -127,7 +127,7 @@ export default function HouseguestProfilePage() {
             <CardContent>
               <div className="text-center p-6">
                 <Key className="w-12 h-12 text-amber-400 mx-auto mb-3" />
-                <div className="text-4xl font-bold gold-text mb-2">
+                <div className="text-4xl font-bold text-amber-400 mb-2">
                   {houseguest.wins.hoh.length > 0 ? houseguest.wins.hoh.join(', ') : 'No Wins'}
                 </div>
                 <div className="text-lg text-white/80">Head of Household</div>
@@ -144,7 +144,7 @@ export default function HouseguestProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="text-center p-6">
-                <div className="w-12 h-12 text-blue-400 mx-auto mb-3 text-4xl">🚫</div>
+                <div className="w-12 h-12 mx-auto mb-3 text-4xl" style={{ color: '#60a5fa' }}>🚫</div>
                 <div className="text-4xl font-bold text-blue-400 mb-2">
                   {houseguest.wins.pov.length > 0 ? houseguest.wins.pov.join(', ') : 'No Wins'}
                 </div>
