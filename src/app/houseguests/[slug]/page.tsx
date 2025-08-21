@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { ArrowLeft, Crown, Shield, Zap } from 'lucide-react'
+import { ArrowLeft, Crown, Shield, Zap, Trophy, Target } from 'lucide-react'
 import { Houseguest, pointsForHG } from '@/types'
 
 export default function HouseguestProfilePage() {
@@ -46,11 +46,11 @@ export default function HouseguestProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading houseguest...</p>
+      <div className="min-h-screen navy-gradient">
+        <div className="mobile-container">
+          <div className="text-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
+            <p className="text-white/80">Loading houseguest...</p>
           </div>
         </div>
       </div>
@@ -59,13 +59,16 @@ export default function HouseguestProfilePage() {
 
   if (error || !houseguest) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+      <div className="min-h-screen navy-gradient">
+        <div className="mobile-container">
+          <div className="text-center py-20">
+            <h1 className="text-2xl font-bold text-white mb-6">
               {error || 'Houseguest not found'}
             </h1>
-            <Button onClick={() => router.push('/houseguests')}>
+            <Button 
+              onClick={() => router.push('/houseguests')}
+              className="gold-accent"
+            >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Houseguests
             </Button>
@@ -79,148 +82,149 @@ export default function HouseguestProfilePage() {
   const totalWins = houseguest.wins.hoh.length + houseguest.wins.pov.length + houseguest.wins.blockbuster.length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen navy-gradient">
+      <div className="mobile-container">
         {/* Back Button */}
-        <div className="mb-6">
+        <div className="pt-6 pb-4">
           <Link href="/houseguests">
-            <Button variant="outline">
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Houseguests
             </Button>
           </Link>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <Card className="md:col-span-1">
-            <CardHeader className="text-center">
-              <Avatar className="w-32 h-32 mx-auto mb-4">
-                <AvatarImage 
-                  src={houseguest.photoUrl || undefined} 
-                  alt={`Photo of ${houseguest.firstName} ${houseguest.lastName}`}
-                />
-                <AvatarFallback className="text-2xl">
-                  {houseguest.firstName[0]}{houseguest.lastName[0]}
-                </AvatarFallback>
-              </Avatar>
-              <CardTitle className="text-2xl">
-                {houseguest.firstName} {houseguest.lastName}
+        {/* Profile Header */}
+        <div className="text-center mb-8">
+          <Avatar className="w-24 h-24 mx-auto mb-4 ring-4 ring-amber-200">
+            <AvatarImage 
+              src={houseguest.photoUrl || undefined} 
+              alt={`Photo of ${houseguest.firstName} ${houseguest.lastName}`}
+            />
+            <AvatarFallback className="text-xl bg-amber-100 text-amber-800">
+              {houseguest.firstName[0]}{houseguest.lastName[0]}
+            </AvatarFallback>
+          </Avatar>
+          <h1 className="text-3xl font-bold text-white mb-2">
+            {houseguest.firstName} {houseguest.lastName}
+          </h1>
+          <div className="flex items-center justify-center space-x-4 text-white/80">
+            <span className="text-lg font-semibold gold-text">{totalPoints} pts</span>
+            <span>•</span>
+            <span>{totalWins} comp wins</span>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="space-y-4 mb-8">
+          {/* Competition Wins */}
+          <Card className="navy-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Trophy className="w-5 h-5 gold-text" />
+                Competition Wins
               </CardTitle>
-              <div className="flex justify-center">
-                <Badge variant={houseguest.status === 'IN' ? 'default' : 'secondary'} className="text-sm">
-                  {houseguest.status === 'IN' ? 'Still In Game' : 'Evicted'}
-                </Badge>
-              </div>
             </CardHeader>
             <CardContent>
-              {houseguest.bio && (
-                <div className="mb-4">
-                  <h3 className="font-semibold mb-2">Bio</h3>
-                  <p className="text-gray-600 text-sm">{houseguest.bio}</p>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
+                  <Crown className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold gold-text">
+                    {houseguest.wins.hoh.length}
+                  </div>
+                  <div className="text-sm text-white/80">HOH</div>
+                  {houseguest.wins.hoh.length > 0 && (
+                    <div className="text-xs text-amber-300 mt-1">
+                      Weeks: {houseguest.wins.hoh.join(', ')}
+                    </div>
+                  )}
                 </div>
-              )}
-              
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Total Points:</span>
-                  <span className="text-2xl font-bold text-blue-600">{totalPoints}</span>
+
+                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
+                  <Shield className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold gold-text">
+                    {houseguest.wins.pov.length}
+                  </div>
+                  <div className="text-sm text-white/80">POV</div>
+                  {houseguest.wins.pov.length > 0 && (
+                    <div className="text-xs text-amber-300 mt-1">
+                      Weeks: {houseguest.wins.pov.join(', ')}
+                    </div>
+                  )}
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="font-medium">Competition Wins:</span>
-                  <span className="text-lg font-semibold">{totalWins}</span>
+
+                <div className="text-center p-4 bg-amber-50/10 rounded-lg border border-amber-200/20">
+                  <Zap className="w-8 h-8 text-amber-400 mx-auto mb-2" />
+                  <div className="text-2xl font-bold gold-text">
+                    {houseguest.wins.blockbuster.length}
+                  </div>
+                  <div className="text-sm text-white/80">BB</div>
+                  {houseguest.wins.blockbuster.length > 0 && (
+                    <div className="text-xs text-amber-300 mt-1">
+                      Weeks: {houseguest.wins.blockbuster.join(', ')}
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {houseguest.status === 'EVICTED' && houseguest.eviction && (
-                <div className="mt-4 p-3 bg-red-50 rounded-lg">
-                  <h3 className="font-semibold text-red-800 mb-1">Eviction Info</h3>
-                  <p className="text-red-700 text-sm">
-                    Evicted in Week {houseguest.eviction.week}
-                  </p>
-                  <p className="text-red-700 text-sm">
-                    Vote: {houseguest.eviction.vote}
-                  </p>
-                </div>
-              )}
             </CardContent>
           </Card>
 
-          {/* Stats and History */}
-          <div className="md:col-span-2 space-y-6">
-            {/* Competition Wins */}
-            <Card>
+          {/* Bio */}
+          {houseguest.bio && (
+            <Card className="navy-card">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Crown className="w-5 h-5" />
-                  Competition Wins
+                <CardTitle className="text-white">Bio</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-white/80 leading-relaxed">{houseguest.bio}</p>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* On the Block History */}
+          {houseguest.onTheBlockWeeks.length > 0 && (
+            <Card className="navy-card">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Target className="w-5 h-5 gold-text" />
+                  On the Block History
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="text-center p-4 bg-yellow-50 rounded-lg">
-                    <Crown className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-yellow-800">
-                      {houseguest.wins.hoh.length}
-                    </div>
-                    <div className="text-sm text-yellow-700">HOH Wins</div>
-                    {houseguest.wins.hoh.length > 0 && (
-                      <div className="text-xs text-yellow-600 mt-1">
-                        Weeks: {houseguest.wins.hoh.join(', ')}
-                      </div>
-                    )}
-                  </div>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {houseguest.onTheBlockWeeks.map((week) => (
+                    <Badge key={week} variant="outline" className="border-amber-200/30 text-amber-300">
+                      Week {week}
+                    </Badge>
+                  ))}
+                </div>
+                <p className="text-sm text-white/60">
+                  Nominated {houseguest.onTheBlockWeeks.length} time{houseguest.onTheBlockWeeks.length !== 1 ? 's' : ''}
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
-                  <div className="text-center p-4 bg-blue-50 rounded-lg">
-                    <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-blue-800">
-                      {houseguest.wins.pov.length}
-                    </div>
-                    <div className="text-sm text-blue-700">POV Wins</div>
-                    {houseguest.wins.pov.length > 0 && (
-                      <div className="text-xs text-blue-600 mt-1">
-                        Weeks: {houseguest.wins.pov.join(', ')}
-                      </div>
-                    )}
+          {/* Eviction Info */}
+          {houseguest.status === 'EVICTED' && houseguest.eviction && (
+            <Card className="navy-card border-red-400/30">
+              <CardHeader>
+                <CardTitle className="text-red-300">Eviction Info</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-white/80">Week:</span>
+                    <span className="text-red-300 font-semibold">{houseguest.eviction.week}</span>
                   </div>
-
-                  <div className="text-center p-4 bg-purple-50 rounded-lg">
-                    <Zap className="w-8 h-8 text-purple-600 mx-auto mb-2" />
-                    <div className="text-2xl font-bold text-purple-800">
-                      {houseguest.wins.blockbuster.length}
-                    </div>
-                    <div className="text-sm text-purple-700">Blockbuster Wins</div>
-                    {houseguest.wins.blockbuster.length > 0 && (
-                      <div className="text-xs text-purple-600 mt-1">
-                        Weeks: {houseguest.wins.blockbuster.join(', ')}
-                      </div>
-                    )}
+                  <div className="flex justify-between">
+                    <span className="text-white/80">Vote:</span>
+                    <span className="text-red-300 font-semibold">{houseguest.eviction.vote}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
-
-            {/* On the Block History */}
-            {houseguest.onTheBlockWeeks.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>On the Block History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {houseguest.onTheBlockWeeks.map((week) => (
-                      <Badge key={week} variant="outline">
-                        Week {week}
-                      </Badge>
-                    ))}
-                  </div>
-                  <p className="text-sm text-gray-600 mt-2">
-                    Nominated {houseguest.onTheBlockWeeks.length} time{houseguest.onTheBlockWeeks.length !== 1 ? 's' : ''}
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
