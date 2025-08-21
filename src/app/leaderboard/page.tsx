@@ -58,7 +58,7 @@ export default function LeaderboardPage() {
   if (loading) {
     return (
       <div className="min-h-screen navy-gradient">
-        <div className="mobile-container">
+        <div className="px-4 py-6">
           <div className="text-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-400 mx-auto mb-4"></div>
             <p className="text-white/80">Loading leaderboard...</p>
@@ -70,7 +70,7 @@ export default function LeaderboardPage() {
 
   return (
     <div className="min-h-screen navy-gradient">
-      <div className="mobile-container">
+      <div className="px-4 py-6">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-white mb-6">
