@@ -8,25 +8,77 @@ export async function GET(
   try {
     const { slug } = await params
 
-    const { data: houseguest, error } = await supabase
+    // Fetch houseguest
+    const { data: houseguest, error: houseguestError } = await supabase
       .from('houseguests')
       .select('*')
       .eq('slug', slug)
       .single()
 
-    if (error) {
-      if (error.code === 'PGRST116') {
+    if (houseguestError) {
+      if (houseguestError.code === 'PGRST116') {
         return NextResponse.json(
           { error: 'Houseguest not found' },
           { status: 404 }
         )
       }
-      console.error('Supabase error:', error)
+      console.error('Supabase error fetching houseguest:', houseguestError)
       return NextResponse.json(
         { error: 'Failed to fetch houseguest' },
         { status: 500 }
       )
     }
+
+    // Fetch weeks data to calculate stats
+    const { data: weeks, error: weeksError } = await supabase
+      .from('weeks')
+      .select('*')
+      .order('week', { ascending: true })
+
+    if (weeksError) {
+      console.error('Supabase error fetching weeks:', weeksError)
+      return NextResponse.json(
+        { error: 'Failed to fetch weeks data' },
+        { status: 500 }
+      )
+    }
+
+    // Calculate stats based on weeks data
+    const hohWins: number[] = []
+    const povWins: number[] = []
+    const blockbusterWins: number[] = []
+    const onTheBlockWeeks: number[] = []
+    let evictionWeek: number | null = null
+    let evictionVote: string | null = null
+
+    // Process each week to calculate stats
+    weeks.forEach(week => {
+      // Check HOH wins
+      if (week.hohWinnerId === houseguest.id) {
+        hohWins.push(week.week)
+      }
+
+      // Check POV wins
+      if (week.povWinnerId === houseguest.id) {
+        povWins.push(week.week)
+      }
+
+      // Check Blockbuster wins
+      if (week.blockbusterWinnerId === houseguest.id) {
+        blockbusterWins.push(week.week)
+      }
+
+      // Check if nominated (in nominees array)
+      if (week.nominees && week.nominees.includes(houseguest.id)) {
+        onTheBlockWeeks.push(week.week)
+      }
+
+      // Check if evicted
+      if (week.evictedNomineeId === houseguest.id) {
+        evictionWeek = week.week
+        evictionVote = week.evictionVote
+      }
+    })
 
     // Transform the data to match our frontend types
     const transformedHouseguest = {
@@ -37,16 +89,17 @@ export async function GET(
       photoUrl: houseguest.photoUrl,
       bio: houseguest.bio,
       status: houseguest.status,
-      eviction: houseguest.evictionWeek && houseguest.evictionVote ? {
-        week: houseguest.evictionWeek,
-        vote: houseguest.evictionVote,
+      eviction: evictionWeek && evictionVote ? {
+        week: evictionWeek,
+        vote: evictionVote,
       } : null,
-      onTheBlockWeeks: houseguest.onTheBlockWeeks || [],
+      onTheBlockWeeks,
       wins: {
-        hoh: houseguest.hohWins || [],
-        pov: houseguest.povWins || [],
-        blockbuster: houseguest.blockbusterWins || [],
+        hoh: hohWins,
+        pov: povWins,
+        blockbuster: blockbusterWins,
       },
+      finalPlacement: houseguest.finalPlacement,
     }
 
     return NextResponse.json(transformedHouseguest)
