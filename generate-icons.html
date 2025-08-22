@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generate Icons</title>
+</head>
+<body>
+    <h1>Camera Lens Logo Generator</h1>
+    <p>This page can be used to generate PNG icons from the SVG logo.</p>
+    
+    <div>
+        <h2>192x192 Icon</h2>
+        <canvas id="canvas192" width="192" height="192"></canvas>
+        <br>
+        <button onclick="downloadCanvas('canvas192', 'icon-192.png')">Download 192x192</button>
+    </div>
+    
+    <div>
+        <h2>512x512 Icon</h2>
+        <canvas id="canvas512" width="512" height="512"></canvas>
+        <br>
+        <button onclick="downloadCanvas('canvas512', 'icon-512.png')">Download 512x512</button>
+    </div>
+    
+    <div>
+        <h2>180x180 Apple Touch Icon</h2>
+        <canvas id="canvas180" width="180" height="180"></canvas>
+        <br>
+        <button onclick="downloadCanvas('canvas180', 'apple-touch-icon.png')">Download 180x180</button>
+    </div>
+
+    <script>
+        function drawLogo(canvasId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, size, size);
+            
+            // White background
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Dark outer ring
+            ctx.fillStyle = '#1f2937';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 * 0.78, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Create gradient for lens
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#1e3a8a');
+            gradient.addColorStop(1, '#06b6d4');
+            
+            // Main lens glass
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 * 0.55, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Center aperture
+            ctx.fillStyle = '#000';
+            ctx.beginPath();
+            ctx.arc(size/2, size/2, size/2 * 0.12, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Large reflection
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(size/2 * 0.78, size/2 * 0.78, size/2 * 0.16, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Small reflection
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.beginPath();
+            ctx.arc(size/2 * 0.86, size/2 * 0.86, size/2 * 0.06, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+        
+        function downloadCanvas(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        // Draw all logos when page loads
+        window.onload = function() {
+            drawLogo('canvas192');
+            drawLogo('canvas512');
+            drawLogo('canvas180');
+        };
+    </script>
+</body>
+</html>
