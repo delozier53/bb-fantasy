@@ -45,8 +45,17 @@ export type LeaderboardEntry = {
 }
 
 // Points calculation utilities
-export const pointsForHG = (hg: Houseguest) =>
-  2 * (hg.wins.hoh.length + hg.wins.pov.length + hg.wins.blockbuster.length)
+export const pointsForHG = (hg: Houseguest) => {
+  // Competition wins
+  const hohPoints = hg.wins.hoh.length * 5  // 5 points per HOH win
+  const povPoints = hg.wins.pov.length * 3  // 3 points per POV win
+  const blockbusterPoints = hg.wins.blockbuster.length * 3  // 3 points per Blockbuster win
+  
+  // Nomination survival points (1 point for each week nominated but not evicted)
+  const nominationSurvivalPoints = hg.onTheBlockWeeks.length * 1
+  
+  return hohPoints + povPoints + blockbusterPoints + nominationSurvivalPoints
+}
 
 export const pointsForUser = (user: User, roster: Record<string, Houseguest>) =>
   user.picks.reduce((s, id) => s + (roster[id] ? pointsForHG(roster[id]) : 0), 0)

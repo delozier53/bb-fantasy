@@ -64,7 +64,7 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-lg text-white mb-2">Earn Points</h3>
               <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-                Earn points for each comp your team wins
+                HOH: 5pts • POV/Blockbuster: 3pts • Nominated: 1pt
               </p>
             </div>
             <div className="text-center">
