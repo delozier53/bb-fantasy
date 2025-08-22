@@ -63,9 +63,12 @@ export default function Home() {
                 2
               </div>
               <h3 className="font-bold text-lg text-white mb-2">Earn Points</h3>
-              <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-                HOH: 5pts • POV/Blockbuster: 3pts • Nominated: 1pt
-              </p>
+              <div className="text-white/80 text-sm sm:text-base leading-relaxed space-y-1">
+                <p>Winning HOH: 5pts</p>
+                <p>Winning POV: 3pts</p>
+                <p>Winning Block Buster: 3pts</p>
+                <p>Surviving the Block: 1pt</p>
+              </div>
             </div>
             <div className="text-center">
               <div className="w-14 h-14 sm:w-16 sm:h-16 gold-gradient rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
