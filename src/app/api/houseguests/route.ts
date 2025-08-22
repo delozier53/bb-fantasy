@@ -70,6 +70,12 @@ export async function GET() {
         }
       })
 
+      // Determine status based on eviction data
+      let status = hg.status
+      if (evictionWeek && evictionVote) {
+        status = 'EVICTED'
+      }
+
       return {
         id: hg.id,
         slug: hg.slug,
@@ -77,7 +83,7 @@ export async function GET() {
         lastName: hg.lastName,
         photoUrl: hg.photoUrl,
         bio: hg.bio,
-        status: hg.status,
+        status: status,
         eviction: evictionWeek && evictionVote ? {
           week: evictionWeek,
           vote: evictionVote,

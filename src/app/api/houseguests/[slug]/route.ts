@@ -80,6 +80,12 @@ export async function GET(
       }
     })
 
+    // Determine status based on eviction data
+    let status = houseguest.status
+    if (evictionWeek && evictionVote) {
+      status = 'EVICTED'
+    }
+
     // Transform the data to match our frontend types
     const transformedHouseguest = {
       id: houseguest.id,
@@ -88,7 +94,7 @@ export async function GET(
       lastName: houseguest.lastName,
       photoUrl: houseguest.photoUrl,
       bio: houseguest.bio,
-      status: houseguest.status,
+      status: status,
       eviction: evictionWeek && evictionVote ? {
         week: evictionWeek,
         vote: evictionVote,

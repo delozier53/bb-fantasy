@@ -121,32 +121,21 @@ export default function HouseguestsPage() {
                               </span>
                             </div>
                               
-                              {/* Competition Wins */}
-                              <div className="text-sm">
-                                <span className="text-slate-600">
-                                  {totalWins > 0 ? (
-                                    <span><span className="font-medium gold-text">{totalWins}</span> comp wins</span>
-                                  ) : (
-                                    <span className="text-slate-500">No comp wins</span>
-                                  )}
-                                </span>
-                              </div>
-                              
                               {/* Win Badges */}
                               {(hg.wins.hoh.length > 0 || hg.wins.pov.length > 0 || hg.wins.blockbuster.length > 0) && (
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {hg.wins.hoh.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 bg-amber-50">
                                       HOH ×{hg.wins.hoh.length}
                                     </Badge>
                                   )}
                                   {hg.wins.pov.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-blue-300 text-blue-700 bg-blue-50">
                                       POV ×{hg.wins.pov.length}
                                     </Badge>
                                   )}
                                   {hg.wins.blockbuster.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-purple-300 text-purple-700 bg-purple-50">
                                       BB ×{hg.wins.blockbuster.length}
                                     </Badge>
                                   )}
@@ -214,32 +203,21 @@ export default function HouseguestsPage() {
                               </span>
                             </div>
                               
-                              {/* Competition Wins */}
-                              <div className="text-sm">
-                                <span className="text-slate-600">
-                                  {totalWins > 0 ? (
-                                    <span><span className="font-medium gold-text">{totalWins}</span> comp wins</span>
-                                  ) : (
-                                    <span className="text-slate-500">No comp wins</span>
-                                  )}
-                                </span>
-                              </div>
-                              
                               {/* Win Badges */}
                               {(hg.wins.hoh.length > 0 || hg.wins.pov.length > 0 || hg.wins.blockbuster.length > 0) && (
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {hg.wins.hoh.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 bg-amber-50">
                                       HOH ×{hg.wins.hoh.length}
                                     </Badge>
                                   )}
                                   {hg.wins.pov.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-blue-300 text-blue-700 bg-blue-50">
                                       POV ×{hg.wins.pov.length}
                                     </Badge>
                                   )}
                                   {hg.wins.blockbuster.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-purple-300 text-purple-700 bg-purple-50">
                                       BB ×{hg.wins.blockbuster.length}
                                     </Badge>
                                   )}
@@ -307,32 +285,21 @@ export default function HouseguestsPage() {
                               </span>
                             </div>
                               
-                              {/* Competition Wins */}
-                              <div className="text-sm">
-                                <span className="text-slate-600">
-                                  {totalWins > 0 ? (
-                                    <span><span className="font-medium gold-text">{totalWins}</span> comp wins</span>
-                                  ) : (
-                                    <span className="text-slate-500">No comp wins</span>
-                                  )}
-                                </span>
-                              </div>
-                              
                               {/* Win Badges */}
                               {(hg.wins.hoh.length > 0 || hg.wins.pov.length > 0 || hg.wins.blockbuster.length > 0) && (
                                 <div className="flex flex-wrap gap-1 mt-2">
                                   {hg.wins.hoh.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-amber-300 text-amber-700 bg-amber-50">
                                       HOH ×{hg.wins.hoh.length}
                                     </Badge>
                                   )}
                                   {hg.wins.pov.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-blue-300 text-blue-700 bg-blue-50">
                                       POV ×{hg.wins.pov.length}
                                     </Badge>
                                   )}
                                   {hg.wins.blockbuster.length > 0 && (
-                                    <Badge variant="outline" className="text-xs border-amber-200 text-amber-700">
+                                    <Badge variant="outline" className="text-xs border-purple-300 text-purple-700 bg-purple-50">
                                       BB ×{hg.wins.blockbuster.length}
                                     </Badge>
                                   )}
