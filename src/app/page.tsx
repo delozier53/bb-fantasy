@@ -21,15 +21,12 @@ export default function Home() {
             
             {/* App Title */}
             <h1 className="text-3xl sm:text-4xl font-bold text-white mb-3 sm:mb-4 tracking-tight">
-              Big Brother
-              <span className="block gold-gradient bg-clip-text text-transparent">
-                Fantasy League
-              </span>
+              BB Fantasy League
             </h1>
             
             {/* App Description */}
             <p className="text-base sm:text-lg text-white/90 mb-6 sm:mb-8 leading-relaxed">
-              Pick your 5 houseguests and compete in the ultimate Big Brother Season 27 fantasy league!
+              Join other BB fans, pick your favorite houseguests, earn points and climb the leaderboard
             </p>
             
             {/* Primary CTA */}
@@ -46,29 +43,9 @@ export default function Home() {
 
       {/* Mobile-First Main Content */}
       <div className="px-4 py-6 sm:py-8">
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-8 sm:mb-12">
-          <Card className="navy-card text-center py-4">
-            <div className="text-2xl font-bold gold-text mb-1">27</div>
-            <div className="text-xs text-slate-600">Season</div>
-          </Card>
-          <Card className="navy-card text-center py-4">
-            <div className="text-2xl font-bold gold-text mb-1">5</div>
-            <div className="text-xs text-slate-600">Houseguests</div>
-          </Card>
-          <Card className="navy-card text-center py-4">
-            <div className="text-2xl font-bold gold-text mb-1">2</div>
-            <div className="text-xs text-slate-600">Points per Win</div>
-          </Card>
-          <Card className="navy-card text-center py-4">
-            <div className="text-2xl font-bold gold-text mb-1">∞</div>
-            <div className="text-xs text-slate-600">Fun</div>
-          </Card>
-        </div>
-
         {/* How It Works - Mobile Stack */}
         <div className="text-center mb-8 sm:mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold navy-text mb-6 sm:mb-8">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">
             How It Works
           </h2>
           <div className="space-y-6 sm:space-y-8">
@@ -76,8 +53,8 @@ export default function Home() {
               <div className="w-14 h-14 sm:w-16 sm:h-16 gold-gradient rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 1
               </div>
-              <h3 className="font-bold text-lg navy-text mb-2">Pick Your Team</h3>
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              <h3 className="font-bold text-lg text-white mb-2">Pick Your Team</h3>
+              <p className="text-white/80 text-sm sm:text-base leading-relaxed">
                 Select exactly 5 houseguests from the Season 27 cast
               </p>
             </div>
@@ -85,8 +62,8 @@ export default function Home() {
               <div className="w-14 h-14 sm:w-16 sm:h-16 gold-gradient rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 2
               </div>
-              <h3 className="font-bold text-lg navy-text mb-2">Earn Points</h3>
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              <h3 className="font-bold text-lg text-white mb-2">Earn Points</h3>
+              <p className="text-white/80 text-sm sm:text-base leading-relaxed">
                 Get 2 points for each HOH, POV, or Blockbuster win
               </p>
             </div>
@@ -94,15 +71,13 @@ export default function Home() {
               <div className="w-14 h-14 sm:w-16 sm:h-16 gold-gradient rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
                 3
               </div>
-              <h3 className="font-bold text-lg navy-text mb-2">Compete</h3>
-              <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+              <h3 className="font-bold text-lg text-white mb-2">Compete</h3>
+              <p className="text-white/80 text-sm sm:text-base leading-relaxed">
                 Climb the leaderboard as the season progresses
               </p>
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
   )
