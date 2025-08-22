@@ -9,6 +9,7 @@ export type Houseguest = {
   eviction?: { week: number; vote: string } | null
   onTheBlockWeeks: number[]
   wins: { hoh: number[]; pov: number[]; blockbuster: number[] }
+  finalPlacement?: "WINNER" | "RUNNER_UP" | null
 }
 
 export type User = {
@@ -54,7 +55,26 @@ export const pointsForHG = (hg: Houseguest) => {
   // Nomination survival points (1 point for each week nominated but not evicted)
   const nominationSurvivalPoints = hg.onTheBlockWeeks.length * 1
   
-  return hohPoints + povPoints + blockbusterPoints + nominationSurvivalPoints
+  // Weekly survival points (1 point for week 1, 2 for week 2, 3 for week 3, etc.)
+  // Calculate based on how many weeks they survived (not including final week)
+  const totalWeeksSurvived = hg.status === 'EVICTED' 
+    ? (hg.eviction?.week || 0) - 1  // Survived until eviction week - 1
+    : 16  // Assuming 16 weeks total, survived until week 15 (no points for final week)
+  
+  let weeklySurvivalPoints = 0
+  for (let week = 1; week <= totalWeeksSurvived; week++) {
+    weeklySurvivalPoints += week  // Week 1 = 1pt, Week 2 = 2pts, Week 3 = 3pts, etc.
+  }
+  
+  // Final placement bonuses
+  let placementBonus = 0
+  if (hg.finalPlacement === 'WINNER') {
+    placementBonus = 25  // 25 points for winning the game
+  } else if (hg.finalPlacement === 'RUNNER_UP') {
+    placementBonus = 10  // 10 points for being runner up
+  }
+  
+  return hohPoints + povPoints + blockbusterPoints + nominationSurvivalPoints + weeklySurvivalPoints + placementBonus
 }
 
 export const pointsForUser = (user: User, roster: Record<string, Houseguest>) =>

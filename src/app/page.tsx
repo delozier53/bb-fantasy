@@ -68,6 +68,9 @@ export default function Home() {
                 <p>Winning POV: 3pts</p>
                 <p>Winning Block Buster: 3pts</p>
                 <p>Surviving the Block: 1pt</p>
+                <p>Weekly Survival: 1-15pts</p>
+                <p>Runner Up: 10pts</p>
+                <p>Winner: 25pts</p>
               </div>
             </div>
             <div className="text-center">
