@@ -15,7 +15,6 @@ extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-enabled = true
 # Port to use for the local database URL.
 port = 54322
 # Port used by db diff command to initialize the shadow database.
@@ -99,48 +98,3 @@ enable_signup = true
 enable_confirmations = false
 # Template for sending a confirmation message when a user signs up with a phone number.
 template = "Your code is {{ .Code }}"
-
-[edge_runtime]
-enabled = true
-# Port to use for the Edge Runtime.
-port = 54325
-# Configure one of the supported pooler modes: `transaction`, `session`.
-pool_mode = "transaction"
-# How many server connections to allow per user/database pair.
-default_pool_size = 15
-# Maximum number of client connections allowed.
-max_client_conn = 100
-
-# Config for the postgres database that runs locally for development.
-[postgres]
-# Port to use for the local postgres database.
-port = 54322
-# Port used by db diff command to initialize the shadow database.
-shadow_port = 54320
-# The database major version to use. This has to be the same as your remote database's. Run `SHOW server_version;` on the remote database to check.
-major_version = 15
-
-[analytics]
-enabled = false
-# Configure one of the supported pooler modes: `transaction`, `session`.
-pool_mode = "transaction"
-# How many server connections to allow per user/database pair.
-default_pool_size = 15
-# Maximum number of client connections allowed.
-max_client_conn = 100
-
-[functions]
-# Configure one of the supported pooler modes: `transaction`, `session`.
-pool_mode = "transaction"
-# How many server connections to allow per user/database pair.
-default_pool_size = 15
-# Maximum number of client connections allowed.
-max_client_conn = 100
-
-[functions.verify_jwt]
-# Configure one of the supported pooler modes: `transaction`, `session`.
-pool_mode = "transaction"
-# How many server connections to allow per user/database pair.
-default_pool_size = 15
-# Maximum number of client connections allowed.
-max_client_conn = 100

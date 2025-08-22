@@ -1,14 +1,21 @@
 import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase } from '@/lib/supabase'
 
 export async function GET() {
   try {
-    const houseguests = await prisma.houseguest.findMany({
-      orderBy: [
-        { status: 'asc' }, // IN first, then EVICTED
-        { firstName: 'asc' },
-      ],
-    })
+    const { data: houseguests, error } = await supabase
+      .from('houseguests')
+      .select('*')
+      .order('status', { ascending: true }) // IN first, then EVICTED
+      .order('firstName', { ascending: true })
+
+    if (error) {
+      console.error('Supabase error:', error)
+      return NextResponse.json(
+        { error: 'Failed to fetch houseguests' },
+        { status: 500 }
+      )
+    }
 
     // Transform the data to match our frontend types
     const transformedHouseguests = houseguests.map(hg => ({
@@ -23,11 +30,11 @@ export async function GET() {
         week: hg.evictionWeek,
         vote: hg.evictionVote,
       } : null,
-      onTheBlockWeeks: hg.onTheBlockWeeks,
+      onTheBlockWeeks: hg.onTheBlockWeeks || [],
       wins: {
-        hoh: hg.hohWins,
-        pov: hg.povWins,
-        blockbuster: hg.blockbusterWins,
+        hoh: hg.hohWins || [],
+        pov: hg.povWins || [],
+        blockbuster: hg.blockbusterWins || [],
       },
     }))
 

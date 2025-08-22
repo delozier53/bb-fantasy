@@ -1,21 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { supabase } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params
+    const { slug } = await params
 
-    const houseguest = await prisma.houseguest.findUnique({
-      where: { slug },
-    })
+    const { data: houseguest, error } = await supabase
+      .from('houseguests')
+      .select('*')
+      .eq('slug', slug)
+      .single()
 
-    if (!houseguest) {
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Houseguest not found' },
+          { status: 404 }
+        )
+      }
+      console.error('Supabase error:', error)
       return NextResponse.json(
-        { error: 'Houseguest not found' },
-        { status: 404 }
+        { error: 'Failed to fetch houseguest' },
+        { status: 500 }
       )
     }
 
@@ -32,11 +41,11 @@ export async function GET(
         week: houseguest.evictionWeek,
         vote: houseguest.evictionVote,
       } : null,
-      onTheBlockWeeks: houseguest.onTheBlockWeeks,
+      onTheBlockWeeks: houseguest.onTheBlockWeeks || [],
       wins: {
-        hoh: houseguest.hohWins,
-        pov: houseguest.povWins,
-        blockbuster: houseguest.blockbusterWins,
+        hoh: houseguest.hohWins || [],
+        pov: houseguest.povWins || [],
+        blockbuster: houseguest.blockbusterWins || [],
       },
     }
 
