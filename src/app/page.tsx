@@ -11,8 +11,12 @@ export default function Home() {
         <div className="relative px-4 py-8 sm:py-12">
           <div className="text-center max-w-md mx-auto">
             {/* App Icon */}
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
-              <span className="text-2xl sm:text-3xl">🏠</span>
+            <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
+              <img 
+                src="/logo.svg" 
+                alt="Big Brother Fantasy League Logo" 
+                className="w-12 h-12 sm:w-16 sm:h-16"
+              />
             </div>
             
             {/* App Title */}

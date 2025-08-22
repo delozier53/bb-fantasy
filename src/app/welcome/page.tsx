@@ -73,6 +73,14 @@ export default function WelcomePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
+            {/* App Logo */}
+            <div className="flex justify-center mb-4">
+              <img 
+                src="/logo.svg" 
+                alt="Big Brother Fantasy League Logo" 
+                className="w-16 h-16"
+              />
+            </div>
             <CardTitle>Welcome to Big Brother Fantasy</CardTitle>
             <CardDescription>
               Sign in with your email to get started
@@ -158,6 +166,14 @@ export default function WelcomePage() {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
+            {/* App Logo */}
+            <div className="flex justify-center mb-4">
+              <img 
+                src="/logo.svg" 
+                alt="Big Brother Fantasy League Logo" 
+                className="w-16 h-16"
+              />
+            </div>
             <CardTitle>Create Your Profile</CardTitle>
             <CardDescription>
               Step 1 of 2: Tell us about yourself
@@ -204,6 +220,14 @@ export default function WelcomePage() {
       <div className="max-w-4xl mx-auto">
         <Card>
           <CardHeader className="text-center">
+            {/* App Logo */}
+            <div className="flex justify-center mb-4">
+              <img 
+                src="/logo.svg" 
+                alt="Big Brother Fantasy League Logo" 
+                className="w-16 h-16"
+              />
+            </div>
             <CardTitle>Pick Your Team</CardTitle>
             <CardDescription>
               Step 2 of 2: Select exactly 5 houseguests ({selectedHouseguests.length}/5 selected)
