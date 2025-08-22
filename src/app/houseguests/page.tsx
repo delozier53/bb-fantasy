@@ -61,6 +61,14 @@ export default function HouseguestsPage() {
     <div className="min-h-screen navy-gradient">
       <div className="px-4 py-6">
         <div className="text-center mb-6">
+          {/* App Logo */}
+          <div className="flex justify-center mb-4">
+            <img 
+              src="/logo.svg" 
+              alt="Big Brother Fantasy League Logo" 
+              className="w-12 h-12"
+            />
+          </div>
           <h1 className="text-3xl font-bold text-white">
             Houseguests
           </h1>
