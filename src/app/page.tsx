@@ -55,7 +55,7 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-lg text-white mb-2">Pick Your Team</h3>
               <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-                Select exactly 5 houseguests from the Season 27 cast
+                Build your fantasy BB team of 5 houseguests
               </p>
             </div>
             <div className="text-center">
@@ -64,7 +64,7 @@ export default function Home() {
               </div>
               <h3 className="font-bold text-lg text-white mb-2">Earn Points</h3>
               <p className="text-white/80 text-sm sm:text-base leading-relaxed">
-                Get 2 points for each HOH, POV, or Blockbuster win
+                Earn points for each comp your team wins
               </p>
             </div>
             <div className="text-center">
