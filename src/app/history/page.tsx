@@ -1,17 +1,24 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { Crown, Shield, Zap, Users, Calendar, Clock } from 'lucide-react'
+import { Key, Circle, Minus, RotateCcw, Users, Calendar, Clock, X, Skull, Edit } from 'lucide-react'
 import { WeekPanelSkeleton } from '@/components/ui/skeleton'
-import { Week } from '@/types'
+import { EditWeekPopup } from '@/components/ui/edit-week-popup'
+import { Week, Houseguest } from '@/types'
 
 export default function HistoryPage() {
+  const { data: session } = useSession()
   const [weeks, setWeeks] = useState<Week[]>([])
   const [loading, setLoading] = useState(true)
-  const [houseguests, setHouseguests] = useState<Record<string, { firstName: string; lastName: string }>>({})
+  const [houseguests, setHouseguests] = useState<Houseguest[]>([])
+  const [houseguestsMap, setHouseguestsMap] = useState<Record<string, { firstName: string; lastName: string }>>({})
+  const [selectedWeek, setSelectedWeek] = useState<Week | null>(null)
+  const [isEditPopupOpen, setIsEditPopupOpen] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,11 +34,13 @@ export default function HistoryPage() {
         if (!houseguestsResponse.ok) throw new Error('Failed to fetch houseguests')
         const houseguestsData = await houseguestsResponse.json()
         
+        setHouseguests(houseguestsData)
+        
         const houseguestsMap: Record<string, { firstName: string; lastName: string }> = {}
         houseguestsData.forEach((hg: { id: string; firstName: string; lastName: string }) => {
           houseguestsMap[hg.id] = { firstName: hg.firstName, lastName: hg.lastName }
         })
-        setHouseguests(houseguestsMap)
+        setHouseguestsMap(houseguestsMap)
       } catch (error) {
         console.error('Error fetching history data:', error)
       } finally {
@@ -43,9 +52,50 @@ export default function HistoryPage() {
   }, [])
 
   const getHouseguestName = (id: string) => {
-    const hg = houseguests[id]
-    return hg ? `${hg.firstName} ${hg.lastName}` : 'Unknown'
+    const hg = houseguestsMap[id]
+    return hg ? hg.firstName : 'Unknown'
   }
+
+  const handleEditWeek = (week: Week) => {
+    setSelectedWeek(week)
+    setIsEditPopupOpen(true)
+  }
+
+  const handleCloseEditPopup = () => {
+    setSelectedWeek(null)
+    setIsEditPopupOpen(false)
+  }
+
+  const handleSaveWeek = async (weekData: Partial<Week>) => {
+    if (!selectedWeek) return
+
+    try {
+      const response = await fetch(`/api/admin/week/${selectedWeek.week}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(weekData),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update week')
+      }
+
+      // Refresh the weeks data
+      const weeksResponse = await fetch('/api/history?desc=1')
+      if (weeksResponse.ok) {
+        const weeksData = await weeksResponse.json()
+        setWeeks(weeksData)
+      }
+    } catch (error) {
+      console.error('Error updating week:', error)
+      throw error
+    }
+  }
+
+  // Check if current user is admin
+  const isAdmin = session?.user?.email === 'joshuamdelozier@gmail.com'
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -126,7 +176,7 @@ export default function HistoryPage() {
                                week.blockbusterWinnerId || week.evictedNomineeId
 
                 return (
-                  <AccordionItem key={week.week} value={`week-${week.week}`} className="navy-card border-white/20">
+                  <AccordionItem key={week.week} value={`week-${week.week}`} className="navy-card border-white/20 relative">
                     <AccordionTrigger 
                       className="px-6 py-4 hover:no-underline focus:ring-2 focus:ring-amber-400 focus:outline-none text-white"
                       aria-label={`Week ${week.week} competition results - ${hasData ? 'has data' : 'no data yet'}`}
@@ -134,14 +184,9 @@ export default function HistoryPage() {
                       <div className="flex items-center justify-between w-full">
                         <div className="flex items-center gap-4">
                           <div className="flex items-center gap-2">
-                            <Calendar className="w-5 h-5 text-amber-400" />
-                            <span className="text-xl font-bold text-white">Week {week.week}</span>
+                            <Calendar className="w-5 h-5 text-blue-400" />
+                            <span className="text-xl font-bold text-blue-400">Week {week.week}</span>
                           </div>
-                          {hasData && (
-                            <Badge variant="default" className="ml-2 bg-amber-100 text-amber-800 border-amber-200">
-                              Updated
-                            </Badge>
-                          )}
                         </div>
                         <div className="flex items-center gap-2 text-sm text-white/60">
                           <Clock className="w-4 h-4" />
@@ -149,30 +194,47 @@ export default function HistoryPage() {
                         </div>
                       </div>
                     </AccordionTrigger>
+                    
+                    {/* Admin Edit Button */}
+                    {isAdmin && (
+                      <div className="absolute top-4 right-16 z-10">
+                        <Button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEditWeek(week)
+                          }}
+                          className="bg-amber-500 hover:bg-amber-600 text-white p-2"
+                          size="sm"
+                          title="Edit Week"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    )}
                     <AccordionContent className="px-6 pb-6">
                       {!hasData ? (
                         <div className="text-center py-8 text-white/60">
                           <p>No data has been entered for this week yet.</p>
                         </div>
                       ) : (
-                        <div className="space-y-6">
+                        <div className="space-y-6 pt-4">
                           {/* HOH Competition */}
                           {(week.hohCompetition || week.hohWinnerId) && (
                             <Card className="navy-card">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="flex items-center gap-2 text-lg text-white">
-                                  <Crown className="w-5 h-5 text-amber-400" />
+                              <CardHeader className="pb-0">
+                                <CardTitle className="flex items-center gap-2 text-lg text-amber-400">
+                                  <Key className="w-5 h-5 text-amber-400" />
                                   Head of Household
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className="space-y-2">
                                 {week.hohCompetition && (
-                                  <p className="text-white/80">
+                                  <p className="text-amber-400/80">
                                     <span className="font-medium">Competition:</span> {week.hohCompetition}
                                   </p>
                                 )}
                                 {week.hohWinnerId && (
-                                  <p className="text-white/80">
+                                  <p className="text-amber-400/80">
                                     <span className="font-medium">Winner:</span>{' '}
                                     <Badge variant="outline" className="ml-1 bg-amber-100 text-amber-800 border-amber-200">
                                       {getHouseguestName(week.hohWinnerId)}
@@ -186,9 +248,9 @@ export default function HistoryPage() {
                           {/* Nominees */}
                           {week.nominees && week.nominees.length > 0 && (
                             <Card className="navy-card">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="flex items-center gap-2 text-lg text-white">
-                                  <Users className="w-5 h-5 text-red-400" />
+                              <CardHeader className="pb-0">
+                                <CardTitle className="flex items-center gap-2 text-lg text-red-400">
+                                  <X className="w-5 h-5 text-red-400" />
                                   Nominees
                                 </CardTitle>
                               </CardHeader>
@@ -209,20 +271,23 @@ export default function HistoryPage() {
                           {/* POV Competition */}
                           {(week.povCompetition || week.povWinnerId || week.povUsed !== null) && (
                             <Card className="navy-card">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="flex items-center gap-2 text-lg text-white">
-                                  <Shield className="w-5 h-5 text-blue-400" />
+                              <CardHeader className="pb-0">
+                                <CardTitle className="flex items-center gap-2 text-lg text-blue-400">
+                                  <div className="relative w-5 h-5">
+                                    <Circle className="w-5 h-5 text-blue-400" />
+                                    <Minus className="w-4 h-4 text-blue-400 absolute top-0.5 left-0.5" />
+                                  </div>
                                   Power of Veto
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className="space-y-2">
                                 {week.povCompetition && (
-                                  <p className="text-white/80">
+                                  <p className="text-blue-400/80">
                                     <span className="font-medium">Competition:</span> {week.povCompetition}
                                   </p>
                                 )}
                                 {week.povWinnerId && (
-                                  <p className="text-white/80">
+                                  <p className="text-blue-400/80">
                                     <span className="font-medium">Winner:</span>{' '}
                                     <Badge variant="outline" className="ml-1 bg-blue-100 text-blue-800 border-blue-200">
                                       {getHouseguestName(week.povWinnerId)}
@@ -230,20 +295,20 @@ export default function HistoryPage() {
                                   </p>
                                 )}
                                 {week.povUsed !== null && (
-                                  <p className="text-white/80">
+                                  <p className="text-blue-400/80">
                                     <span className="font-medium">POV Used:</span>{' '}
-                                    <Badge variant={week.povUsed ? 'default' : 'secondary'} className={week.povUsed ? 'bg-green-100 text-green-800 border-green-200' : 'bg-gray-100 text-gray-800 border-gray-200'}>
+                                    <Badge variant={week.povUsed ? 'default' : 'secondary'} className={week.povUsed ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'}>
                                       {week.povUsed ? 'Yes' : 'No'}
                                     </Badge>
                                   </p>
                                 )}
                                 {week.povUsed && week.povRemovedNomineeId && week.povReplacementId && (
                                   <div className="mt-3 p-3 bg-blue-400/20 rounded-lg">
-                                    <p className="text-sm text-blue-200">
+                                    <p className="text-sm text-blue-400/80">
                                       <span className="font-medium">Removed:</span>{' '}
                                       {getHouseguestName(week.povRemovedNomineeId)}
                                     </p>
-                                    <p className="text-sm text-blue-200">
+                                    <p className="text-sm text-blue-400/80">
                                       <span className="font-medium">Replacement:</span>{' '}
                                       {getHouseguestName(week.povReplacementId)}
                                     </p>
@@ -256,20 +321,20 @@ export default function HistoryPage() {
                           {/* Blockbuster Competition */}
                           {(week.blockbusterCompetition || week.blockbusterWinnerId) && (
                             <Card className="navy-card">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="flex items-center gap-2 text-lg text-white">
-                                  <Zap className="w-5 h-5 text-purple-400" />
+                              <CardHeader className="pb-0">
+                                <CardTitle className="flex items-center gap-2 text-lg text-purple-400">
+                                  <RotateCcw className="w-5 h-5 text-purple-400" />
                                   BB Blockbuster
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className="space-y-2">
                                 {week.blockbusterCompetition && (
-                                  <p className="text-white/80">
+                                  <p className="text-purple-400/80">
                                     <span className="font-medium">Competition:</span> {week.blockbusterCompetition}
                                   </p>
                                 )}
                                 {week.blockbusterWinnerId && (
-                                  <p className="text-white/80">
+                                  <p className="text-purple-400/80">
                                     <span className="font-medium">Winner:</span>{' '}
                                     <Badge variant="outline" className="ml-1 bg-purple-100 text-purple-800 border-purple-200">
                                       {getHouseguestName(week.blockbusterWinnerId)}
@@ -283,23 +348,23 @@ export default function HistoryPage() {
                           {/* Eviction */}
                           {(week.evictedNomineeId || week.evictionVote) && (
                             <Card className="navy-card border-red-400/30">
-                              <CardHeader className="pb-3">
-                                <CardTitle className="flex items-center gap-2 text-lg text-red-300">
-                                  <Users className="w-5 h-5 text-red-400" />
+                              <CardHeader className="pb-0">
+                                <CardTitle className="flex items-center gap-2 text-lg text-black">
+                                  <Skull className="w-5 h-5 text-black" />
                                   Eviction
                                 </CardTitle>
                               </CardHeader>
                               <CardContent className="space-y-2">
                                 {week.evictedNomineeId && (
-                                  <p className="text-red-300">
+                                  <p className="text-black">
                                     <span className="font-medium">Evicted:</span>{' '}
-                                    <Badge variant="destructive" className="ml-1 bg-red-400/20 text-red-300 border-red-400/30">
+                                    <Badge variant="outline" className="ml-1 bg-black text-white border-black">
                                       {getHouseguestName(week.evictedNomineeId)}
                                     </Badge>
                                   </p>
                                 )}
                                 {week.evictionVote && (
-                                  <p className="text-red-300">
+                                  <p className="text-black">
                                     <span className="font-medium">Vote:</span> {week.evictionVote}
                                   </p>
                                 )}
@@ -316,6 +381,15 @@ export default function HistoryPage() {
           </div>
         )}
       </div>
+
+      {/* Edit Week Popup */}
+      <EditWeekPopup
+        isOpen={isEditPopupOpen}
+        onClose={handleCloseEditPopup}
+        week={selectedWeek}
+        houseguests={houseguests}
+        onSave={handleSaveWeek}
+      />
     </div>
   )
 }

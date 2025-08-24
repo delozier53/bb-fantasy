@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { createClient } from '@supabase/supabase-js'
 
 const houseguests = [
   { firstName: 'Adrian', lastName: 'Rocha', slug: 'adrian-rocha' },
@@ -31,22 +31,37 @@ export async function POST() {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
     const results = []
 
     for (const houseguest of houseguests) {
-      const result = await prisma.houseguest.upsert({
-        where: { slug: houseguest.slug },
-        update: {},
-        create: {
+      const { data: result, error } = await supabase
+        .from('houseguests')
+        .upsert({
           ...houseguest,
           status: 'IN',
           hohWins: [],
           povWins: [],
           blockbusterWins: [],
           onTheBlockWeeks: [],
-        },
-      })
-      results.push(result)
+        }, {
+          onConflict: 'slug'
+        })
+        .select()
+        .single()
+
+      if (error) {
+        console.error(`Error upserting houseguest ${houseguest.slug}:`, error)
+        continue
+      }
+
+      if (result) {
+        results.push(result)
+      }
     }
 
     return NextResponse.json({

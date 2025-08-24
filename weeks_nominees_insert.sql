@@ -149,3 +149,58 @@ INSERT INTO weeks (
   NOW(),
   NOW()
 );
+
+-- Update nominees column with the new data provided by user
+-- Week 1: a0a1bbcb-f9c5-4ff6-9db2-3d79effe220b, bdc4c8f7-a2c3-48b3-88fd-108324327fe8, befc51b4-a636-48d6-ae18-d3e32ceeaad8
+UPDATE weeks 
+SET nominees = ARRAY[
+  'a0a1bbcb-f9c5-4ff6-9db2-3d79effe220b',
+  'bdc4c8f7-a2c3-48b3-88fd-108324327fe8',
+  'befc51b4-a636-48d6-ae18-d3e32ceeaad8'
+]
+WHERE week = 1;
+
+-- Week 2: bdc4c8f7-a2c3-48b3-88fd-108324327fe8, e81aacc1-a052-42c4-beca-2a1ad3ae632d, f882c3d7-feba-4719-8ecc-590aebf22734
+UPDATE weeks 
+SET nominees = ARRAY[
+  'bdc4c8f7-a2c3-48b3-88fd-108324327fe8',
+  'e81aacc1-a052-42c4-beca-2a1ad3ae632d',
+  'f882c3d7-feba-4719-8ecc-590aebf22734'
+]
+WHERE week = 2;
+
+-- Week 3: a439bc47-0682-40b7-bf4c-a065f5f324c2, f882c3d7-feba-4719-8ecc-590aebf22734, e81aacc1-a052-42c4-beca-2a1ad3ae632d
+UPDATE weeks 
+SET nominees = ARRAY[
+  'a439bc47-0682-40b7-bf4c-a065f5f324c2',
+  'f882c3d7-feba-4719-8ecc-590aebf22734',
+  'e81aacc1-a052-42c4-beca-2a1ad3ae632d'
+]
+WHERE week = 3;
+
+-- Week 4: a439bc47-0682-40b7-bf4c-a065f5f324c2, 1153f4d4-a640-4ca3-9ae6-9af7a073d7f7, 92f573f4-68c2-4bb7-b9c8-b1c44de00c01
+UPDATE weeks 
+SET nominees = ARRAY[
+  'a439bc47-0682-40b7-bf4c-a065f5f324c2',
+  '1153f4d4-a640-4ca3-9ae6-9af7a073d7f7',
+  '92f573f4-68c2-4bb7-b9c8-b1c44de00c01'
+]
+WHERE week = 4;
+
+-- Week 5: 16809d92-927f-477f-adea-5ef447c8b893, 66f2f964-218f-45de-9b51-ec606e45633b, 94d9ce0f-4838-48fa-8a68-3243aafc49b2
+UPDATE weeks 
+SET nominees = ARRAY[
+  '16809d92-927f-477f-adea-5ef447c8b893',
+  '66f2f964-218f-45de-9b51-ec606e45633b',
+  '94d9ce0f-4838-48fa-8a68-3243aafc49b2'
+]
+WHERE week = 5;
+
+-- Week 6: f5a6eec8-938f-4e6d-bd76-7c60ae57ef1e, 2389caf3-98af-4cf6-b2a9-85698a09f32f, 1153f4d4-a640-4ca3-9ae6-9af7a073d7f7
+UPDATE weeks 
+SET nominees = ARRAY[
+  'f5a6eec8-938f-4e6d-bd76-7c60ae57ef1e',
+  '2389caf3-98af-4cf6-b2a9-85698a09f32f',
+  '1153f4d4-a640-4ca3-9ae6-9af7a073d7f7'
+]
+WHERE week = 6;

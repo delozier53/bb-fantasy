@@ -1,5 +1,11 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@supabase/supabase-js'
+
+// Create a Supabase client with service role key for admin operations
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+)
 
 export async function GET() {
   try {
@@ -9,6 +15,7 @@ export async function GET() {
       .select(`
         id,
         username,
+        email,
         photoUrl,
         createdAt,
         picks (
@@ -19,6 +26,8 @@ export async function GET() {
             firstName,
             lastName,
             status,
+            evictionWeek,
+            onTheBlockWeeks,
             hohWins,
             povWins,
             blockbusterWins
@@ -42,8 +51,22 @@ export async function GET() {
         user.picks.forEach(pick => {
           const hg = pick.houseguests
           if (hg) {
-            // Calculate points: 2 points per competition win
-            const points = 2 * ((hg.hohWins?.length || 0) + (hg.povWins?.length || 0) + (hg.blockbusterWins?.length || 0))
+            // Calculate points using the same logic as pointsForHG function
+            const hohPoints = (hg.hohWins?.length || 0) * 5  // 5 points per HOH win
+            const povPoints = (hg.povWins?.length || 0) * 3  // 3 points per POV win
+            const blockbusterPoints = (hg.blockbusterWins?.length || 0) * 3  // 3 points per Blockbuster win
+            
+            // Nomination survival points (1 point for each week nominated but not evicted)
+            const nominationSurvivalPoints = (hg.onTheBlockWeeks?.length || 0) * 1
+            
+            // Weekly survival points (1 point per week survived)
+            const totalWeeksSurvived = hg.status === 'EVICTED' 
+              ? (hg.evictionWeek || 0) - 1  // Survived until eviction week - 1
+              : 15  // Assuming 15 weeks total (no points for final week)
+            
+            const weeklySurvivalPoints = totalWeeksSurvived * 1  // 1 point per week survived
+            
+            const points = hohPoints + povPoints + blockbusterPoints + nominationSurvivalPoints + weeklySurvivalPoints
             totalPoints += points
 
             // Count remaining houseguests
@@ -56,6 +79,7 @@ export async function GET() {
         return {
           id: user.id,
           username: user.username,
+          email: user.email,
           photoUrl: user.photoUrl,
           totalPoints,
           remainingCount,

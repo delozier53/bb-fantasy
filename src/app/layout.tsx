@@ -6,8 +6,8 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppHeader } from "@/components/ui/app-header";
 import { BottomTabs } from "@/components/ui/bottom-tabs";
-import { PWAInstaller } from "@/components/pwa-installer";
-import { registerServiceWorker } from "@/lib/sw-register";
+
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -52,18 +52,7 @@ export default function RootLayout({
             {children}
             <BottomTabs />
             <Toaster />
-            <PWAInstaller />
-            <script
-              dangerouslySetInnerHTML={{
-                __html: `
-                  if ('serviceWorker' in navigator) {
-                    window.addEventListener('load', function() {
-                      navigator.serviceWorker.register('/sw.js');
-                    });
-                  }
-                `,
-              }}
-            />
+
           </AuthProvider>
         </QueryProvider>
       </body>

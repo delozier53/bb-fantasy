@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { createClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 
 const updateHouseguestSchema = z.object({
@@ -17,9 +15,37 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.isAdmin) {
+    // Use our custom session system instead of NextAuth
+    const sessionToken = request.cookies.get('next-auth.session-token')?.value
+
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
+    // Get the session and user
+    const { data: session, error: sessionError } = await supabase
+      .from('sessions')
+      .select('*')
+      .eq('sessionToken', sessionToken)
+      .single()
+
+    if (sessionError || !session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Get the user to check if admin
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', session.userId)
+      .single()
+
+    if (userError || !user || !user.isAdmin) {
       return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
     }
 
@@ -28,19 +54,28 @@ export async function PUT(
     const updateData = updateHouseguestSchema.parse(body)
 
     // Check if houseguest exists
-    const existingHouseguest = await prisma.houseguest.findUnique({
-      where: { id },
-    })
+    const { data: existingHouseguest, error: existingError } = await supabase
+      .from('houseguests')
+      .select('*')
+      .eq('id', id)
+      .single()
 
-    if (!existingHouseguest) {
+    if (existingError || !existingHouseguest) {
       return NextResponse.json({ error: 'Houseguest not found' }, { status: 404 })
     }
 
     // Update the houseguest
-    const updatedHouseguest = await prisma.houseguest.update({
-      where: { id },
-      data: updateData,
-    })
+    const { data: updatedHouseguest, error: updateError } = await supabase
+      .from('houseguests')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Error updating houseguest:', updateError)
+      return NextResponse.json({ error: 'Failed to update houseguest' }, { status: 500 })
+    }
 
     return NextResponse.json({
       message: 'Houseguest updated successfully',

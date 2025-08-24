@@ -1,154 +1,119 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth/next'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-import { z } from 'zod'
+import { createClient } from '@/lib/supabase'
+import { withRateLimit } from '@/lib/rate-limit'
 
-const updateWeekSchema = z.object({
-  hohCompetition: z.string().optional(),
-  hohWinnerId: z.string().uuid().optional().nullable(),
-  nominees: z.array(z.string().uuid()).length(3).optional(),
-  povCompetition: z.string().optional(),
-  povWinnerId: z.string().uuid().optional().nullable(),
-  povUsed: z.boolean().optional().nullable(),
-  povRemovedNomineeId: z.string().uuid().optional().nullable(),
-  povReplacementId: z.string().uuid().optional().nullable(),
-  blockbusterCompetition: z.string().optional(),
-  blockbusterWinnerId: z.string().uuid().optional().nullable(),
-  evictedNomineeId: z.string().uuid().optional().nullable(),
-  evictionVote: z.string().optional(),
-})
-
-export async function PUT(
+async function handlePUT(
   request: NextRequest,
-  { params }: { params: { n: string } }
+  { params }: { params: Promise<{ n: string }> }
 ) {
   try {
-    const session = await getServerSession(authOptions)
-    
-    if (!session?.user?.isAdmin) {
-      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
-    }
+    const { n } = await params
+    const weekNumber = parseInt(n)
 
-    const weekNumber = parseInt(params.n)
     if (isNaN(weekNumber) || weekNumber < 1) {
       return NextResponse.json({ error: 'Invalid week number' }, { status: 400 })
     }
 
+    // Use our custom session system instead of NextAuth
+    const sessionToken = request.cookies.get('next-auth.session-token')?.value
+
+    if (!sessionToken) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
+
+    // Get the session and user
+    const { data: session, error: sessionError } = await supabase
+      .from('sessions')
+      .select('*')
+      .eq('sessionToken', sessionToken)
+      .single()
+
+    if (sessionError || !session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Check if session is expired
+    if (new Date(session.expires) < new Date()) {
+      return NextResponse.json({ error: 'Session expired' }, { status: 401 })
+    }
+
+    // Get the current user and check if they're an admin
+    const { data: user, error: getUserError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', session.userId)
+      .single()
+
+    if (getUserError || !user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    }
+
+    // Check if user is admin (specifically joshuamdelozier@gmail.com for now)
+    if (!user.isAdmin || user.email !== 'joshuamdelozier@gmail.com') {
+      return NextResponse.json({ error: 'Admin access required' }, { status: 403 })
+    }
+
+    // Get the request body
     const body = await request.json()
-    const updateData = updateWeekSchema.parse(body)
 
-    // Validate POV logic
-    if (updateData.povUsed === true) {
-      if (!updateData.povRemovedNomineeId || !updateData.povReplacementId) {
-        return NextResponse.json(
-          { error: 'POV removal and replacement must be specified when POV is used' },
-          { status: 400 }
-        )
-      }
+    // Validate the week exists
+    const { data: existingWeek, error: weekError } = await supabase
+      .from('weeks')
+      .select('*')
+      .eq('week', weekNumber)
+      .single()
+
+    if (weekError || !existingWeek) {
+      return NextResponse.json({ error: 'Week not found' }, { status: 404 })
     }
 
-    // Validate eviction nominee is one of the nominees
-    if (updateData.evictedNomineeId && updateData.nominees) {
-      if (!updateData.nominees.includes(updateData.evictedNomineeId)) {
-        return NextResponse.json(
-          { error: 'Evicted nominee must be one of the nominees' },
-          { status: 400 }
-        )
-      }
+    // Prepare update data
+    const updateData: any = {
+      updatedAt: new Date().toISOString()
     }
 
-    // Create or update the week
-    const week = await prisma.week.upsert({
-      where: { week: weekNumber },
-      update: updateData,
-      create: {
-        week: weekNumber,
-        ...updateData,
-      },
-    })
+    // Add fields that are provided in the request
+    if (body.hohCompetition !== undefined) updateData.hohCompetition = body.hohCompetition
+    if (body.hohWinnerId !== undefined) updateData.hohWinnerId = body.hohWinnerId || null
+    if (body.nominees !== undefined) updateData.nominees = body.nominees || []
+    if (body.povCompetition !== undefined) updateData.povCompetition = body.povCompetition
+    if (body.povWinnerId !== undefined) updateData.povWinnerId = body.povWinnerId || null
+    if (body.povUsed !== undefined) updateData.povUsed = body.povUsed
+    if (body.povRemovedNomineeId !== undefined) updateData.povRemovedNomineeId = body.povRemovedNomineeId || null
+    if (body.povReplacementId !== undefined) updateData.povReplacementId = body.povReplacementId || null
+    if (body.blockbusterCompetition !== undefined) updateData.blockbusterCompetition = body.blockbusterCompetition
+    if (body.blockbusterWinnerId !== undefined) updateData.blockbusterWinnerId = body.blockbusterWinnerId || null
+    if (body.evictedNomineeId !== undefined) updateData.evictedNomineeId = body.evictedNomineeId || null
+    if (body.evictionVote !== undefined) updateData.evictionVote = body.evictionVote
 
-    // If there's an eviction, update the houseguest status
-    if (updateData.evictedNomineeId) {
-      await prisma.houseguest.update({
-        where: { id: updateData.evictedNomineeId },
-        data: {
-          status: 'EVICTED',
-          evictionWeek: weekNumber,
-          evictionVote: updateData.evictionVote || null,
-        },
-      })
+    // Update the week
+    const { data: updatedWeek, error: updateError } = await supabase
+      .from('weeks')
+      .update(updateData)
+      .eq('week', weekNumber)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Week update error:', updateError)
+      return NextResponse.json({ error: 'Failed to update week' }, { status: 500 })
     }
 
-    // Update houseguest win records
-    if (updateData.hohWinnerId) {
-      await prisma.houseguest.update({
-        where: { id: updateData.hohWinnerId },
-        data: {
-          hohWins: {
-            push: weekNumber,
-          },
-        },
-      })
-    }
-
-    if (updateData.povWinnerId) {
-      await prisma.houseguest.update({
-        where: { id: updateData.povWinnerId },
-        data: {
-          povWins: {
-            push: weekNumber,
-          },
-        },
-      })
-    }
-
-    if (updateData.blockbusterWinnerId) {
-      await prisma.houseguest.update({
-        where: { id: updateData.blockbusterWinnerId },
-        data: {
-          blockbusterWins: {
-            push: weekNumber,
-          },
-        },
-      })
-    }
-
-    // Update on-the-block weeks for nominees
-    if (updateData.nominees) {
-      for (const nomineeId of updateData.nominees) {
-        if (nomineeId) {
-          await prisma.houseguest.update({
-            where: { id: nomineeId },
-            data: {
-              onTheBlockWeeks: {
-                push: weekNumber,
-              },
-            },
-          })
-        }
-      }
-    }
-
-    return NextResponse.json({
-      message: 'Week updated successfully',
-      week: {
-        week: week.week,
-        updatedAt: week.updatedAt,
-      },
-    })
+    return NextResponse.json(updatedWeek)
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: 'Invalid input', details: error.errors },
-        { status: 400 }
-      )
-    }
-
     console.error('Error updating week:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
     )
   }
+}
+
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ n: string }> }) {
+  return withRateLimit(request, () => handlePUT(request, { params }), { limit: 10, window: 60 })
 }

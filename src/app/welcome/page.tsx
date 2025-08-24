@@ -16,7 +16,7 @@ import { Houseguest } from '@/types'
 
 const userProfileSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters').max(20, 'Username must be at most 20 characters'),
-  photoUrl: z.string().url().optional().or(z.literal('')),
+  photoFile: z.any().refine((file) => file && file instanceof File && file.size > 0, 'Profile photo is required'),
 })
 
 type UserProfileForm = z.infer<typeof userProfileSchema>
@@ -32,6 +32,7 @@ export default function WelcomePage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<UserProfileForm>({
     resolver: zodResolver(userProfileSchema),
@@ -70,7 +71,7 @@ export default function WelcomePage() {
 
   if (!session) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+      <div className="min-h-screen navy-gradient flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             {/* App Logo */}
@@ -102,13 +103,14 @@ export default function WelcomePage() {
 
   const onProfileSubmit = async (data: UserProfileForm) => {
     try {
+      // Create FormData for file upload
+      const formData = new FormData()
+      formData.append('username', data.username)
+      formData.append('photoFile', data.photoFile)
+
       const response = await fetch('/api/me', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: data.username,
-          photoUrl: data.photoUrl || null,
-        }),
+        body: formData,
       })
 
       if (!response.ok) {
@@ -163,7 +165,7 @@ export default function WelcomePage() {
 
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="min-h-screen navy-gradient flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
             {/* App Logo */}
@@ -194,14 +196,20 @@ export default function WelcomePage() {
               </div>
 
               <div>
-                <Label htmlFor="photoUrl">Profile Photo URL (optional)</Label>
+                <Label htmlFor="photoFile">Profile Photo (required)</Label>
                 <Input
-                  id="photoUrl"
-                  {...register('photoUrl')}
-                  placeholder="https://example.com/photo.jpg"
+                  id="photoFile"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0]
+                    if (file) {
+                      setValue('photoFile', file)
+                    }
+                  }}
                 />
-                {errors.photoUrl && (
-                  <p className="text-sm text-red-600 mt-1">{errors.photoUrl.message}</p>
+                {errors.photoFile && (
+                  <p className="text-sm text-red-600 mt-1">{errors.photoFile.message}</p>
                 )}
               </div>
 
@@ -216,7 +224,7 @@ export default function WelcomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="min-h-screen navy-gradient p-4">
       <div className="max-w-4xl mx-auto">
         <Card>
           <CardHeader className="text-center">
@@ -230,7 +238,7 @@ export default function WelcomePage() {
             </div>
             <CardTitle>Pick Your Team</CardTitle>
             <CardDescription>
-              Step 2 of 2: Select exactly 5 houseguests ({selectedHouseguests.length}/5 selected)
+              Step 2 of 2: Select 5 houseguests ({selectedHouseguests.length}/5 selected)
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -268,6 +276,15 @@ export default function WelcomePage() {
                       <p className="font-medium text-sm">
                         {hg.firstName} {hg.lastName}
                       </p>
+                      {hg.bio && (
+                        <div className="text-xs text-gray-600 mt-1 space-y-0.5">
+                          {hg.bio.split('\n').map((line, index) => (
+                            <p key={index} className="leading-tight">
+                              {line.trim()}
+                            </p>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 )
@@ -282,6 +299,7 @@ export default function WelcomePage() {
               <Button 
                 onClick={onPicksSubmit}
                 disabled={selectedHouseguests.length !== 5}
+                className={selectedHouseguests.length === 5 ? 'bg-blue-600 hover:bg-blue-700' : ''}
               >
                 Complete Setup
               </Button>

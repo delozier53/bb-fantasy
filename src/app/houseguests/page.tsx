@@ -165,9 +165,10 @@ export default function HouseguestsPage() {
               {filteredHouseguests
                 .filter(hg => hg.status === 'JURY')
                 .sort((a, b) => {
-                  const aWins = a.wins.hoh.length + a.wins.pov.length + a.wins.blockbuster.length
-                  const bWins = b.wins.hoh.length + b.wins.pov.length + b.wins.blockbuster.length
-                  return bWins - aWins // Most wins first
+                  // Sort by eviction week (latest evicted first, so they appear at the top)
+                  const aWeek = a.eviction?.week || 0
+                  const bWeek = b.eviction?.week || 0
+                  return bWeek - aWeek
                 })
                 .map((hg) => {
                   const totalPoints = pointsForHG(hg)
@@ -247,9 +248,10 @@ export default function HouseguestsPage() {
               {filteredHouseguests
                 .filter(hg => hg.status === 'EVICTED')
                 .sort((a, b) => {
-                  const aWins = a.wins.hoh.length + a.wins.pov.length + a.wins.blockbuster.length
-                  const bWins = b.wins.hoh.length + b.wins.pov.length + b.wins.blockbuster.length
-                  return bWins - aWins // Most wins first
+                  // Sort by eviction week (first evicted at bottom, latest evicted at top)
+                  const aWeek = a.eviction?.week || 0
+                  const bWeek = b.eviction?.week || 0
+                  return bWeek - aWeek
                 })
                 .map((hg) => {
                   const totalPoints = pointsForHG(hg)
@@ -315,12 +317,7 @@ export default function HouseguestsPage() {
                             </div>
                           </div>
                           
-                          {/* Eviction info */}
-                          {hg.eviction && (
-                            <div className="text-xs text-slate-500 mt-2 ml-16">
-                              Evicted Week {hg.eviction.week}
-                            </div>
-                          )}
+
                         </div>
                       </Link>
                     </div>

@@ -5,15 +5,26 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
-import { Trophy, Medal, Award, Search } from 'lucide-react'
+import { Trophy, Medal, Award, Search, Edit } from 'lucide-react'
 import { LeaderboardRowSkeleton } from '@/components/ui/skeleton'
 import { LeaderboardEntry } from '@/types'
+import { UserTeamPopup } from '@/components/ui/user-team-popup'
+import { PointValuesPopup } from '@/components/ui/point-values-popup'
+import { EditProfilePopup } from '@/components/ui/edit-profile-popup'
+import { useSession } from 'next-auth/react'
 
 export default function LeaderboardPage() {
+  const { data: session } = useSession()
   const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [filteredLeaderboard, setFilteredLeaderboard] = useState<LeaderboardEntry[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  const [selectedUser, setSelectedUser] = useState<LeaderboardEntry | null>(null)
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const [isPointValuesOpen, setIsPointValuesOpen] = useState(false)
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false)
+
+
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -49,7 +60,63 @@ export default function LeaderboardPage() {
       case 3:
         return <Award className="w-6 h-6 text-amber-600" />
       default:
-        return <span className="w-6 h-6 flex items-center justify-center text-lg font-bold text-gray-600">{rank}</span>
+        return <span className="w-6 h-6 flex items-center justify-center text-lg font-bold text-white">{rank}</span>
+    }
+  }
+
+  const handleUserClick = (user: LeaderboardEntry) => {
+    setSelectedUser(user)
+    setIsPopupOpen(true)
+  }
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false)
+    setSelectedUser(null)
+  }
+
+  const handlePointValuesClick = () => {
+    setIsPointValuesOpen(true)
+  }
+
+  const handleClosePointValues = () => {
+    setIsPointValuesOpen(false)
+  }
+
+  const handleEditProfile = () => {
+    setIsEditProfileOpen(true)
+  }
+
+  const handleCloseEditProfile = () => {
+    setIsEditProfileOpen(false)
+  }
+
+  const handleSaveProfile = async (username: string, photoFile?: File) => {
+    try {
+      const formData = new FormData()
+      formData.append('username', username)
+      if (photoFile) {
+        formData.append('photo', photoFile)
+      }
+
+      const response = await fetch('/api/me', {
+        method: 'PUT',
+        body: formData,
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile')
+      }
+
+      // Refresh the leaderboard to show updated data
+      const leaderboardResponse = await fetch('/api/leaderboard')
+      if (leaderboardResponse.ok) {
+        const data = await leaderboardResponse.json()
+        setLeaderboard(data)
+        setFilteredLeaderboard(data)
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      throw error
     }
   }
 
@@ -85,16 +152,25 @@ export default function LeaderboardPage() {
             Leaderboard
           </h1>
           
-          {/* Search Box */}
-          <div className="relative max-w-md mx-auto mb-6">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-            />
+          {/* Search Box and Point Values Button */}
+          <div className="flex items-center justify-center space-x-4 mb-6">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Search users..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64 pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
+              />
+            </div>
+            
+            <button
+              onClick={handlePointValuesClick}
+              className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-lg transition-colors shadow-lg hover:shadow-xl"
+            >
+              Point Values
+            </button>
           </div>
         </div>
 
@@ -116,144 +192,50 @@ export default function LeaderboardPage() {
           </Card>
         ) : (
           <div className="max-w-4xl mx-auto">
-            {/* Top 3 Podium */}
-            {filteredLeaderboard.length >= 3 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                {/* 2nd Place */}
-                <div className="md:order-1 flex justify-center">
-                  <Card className="navy-card w-full max-w-xs">
-                    <CardContent className="text-center pt-6 pb-4">
-                      <div className="mb-3">
-                        <Medal className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <Badge className="bg-gray-100 text-gray-800 border-gray-200">
-                          2nd Place
-                        </Badge>
-                      </div>
-                      <Link href={`/u/${filteredLeaderboard[1].username}`}>
-                        <Avatar className="w-16 h-16 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-amber-300 transition-all">
-                          <AvatarImage 
-                            src={filteredLeaderboard[1].photoUrl || undefined} 
-                            alt={`Profile photo of ${filteredLeaderboard[1].username}`}
-                          />
-                          <AvatarFallback>
-                            {filteredLeaderboard[1].username[0].toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <h3 className="font-bold text-lg text-white">{filteredLeaderboard[1].username}</h3>
-                      <p className="text-2xl font-bold gold-text">{filteredLeaderboard[1].totalPoints} pts</p>
-                      <p className="text-sm text-white/60">{filteredLeaderboard[1].remainingCount} remaining</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* 1st Place */}
-                <div className="md:order-2 flex justify-center">
-                  <Card className="navy-card w-full max-w-xs transform md:scale-110">
-                    <CardContent className="text-center pt-6 pb-4">
-                      <div className="mb-3">
-                        <Trophy className="w-10 h-10 text-amber-400 mx-auto mb-2" />
-                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                          1st Place
-                        </Badge>
-                      </div>
-                      <Link href={`/u/${filteredLeaderboard[0].username}`}>
-                        <Avatar className="w-20 h-20 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-amber-300 transition-all">
-                          <AvatarImage 
-                            src={filteredLeaderboard[0].photoUrl || undefined} 
-                            alt={`Profile photo of ${filteredLeaderboard[0].username}`}
-                          />
-                          <AvatarFallback>
-                            {filteredLeaderboard[0].username[0].toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <h3 className="font-bold text-xl text-white">{filteredLeaderboard[0].username}</h3>
-                      <p className="text-3xl font-bold gold-text">{filteredLeaderboard[0].totalPoints} pts</p>
-                      <p className="text-sm text-white/60">{filteredLeaderboard[0].remainingCount} remaining</p>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                {/* 3rd Place */}
-                <div className="md:order-3 flex justify-center">
-                  <Card className="navy-card w-full max-w-xs">
-                    <CardContent className="text-center pt-6 pb-4">
-                      <div className="mb-3">
-                        <Award className="w-8 h-8 text-amber-600 mx-auto mb-2" />
-                        <Badge className="bg-amber-100 text-amber-800 border-amber-200">
-                          3rd Place
-                        </Badge>
-                      </div>
-                      <Link href={`/u/${filteredLeaderboard[2].username}`}>
-                        <Avatar className="w-16 h-16 mx-auto mb-3 cursor-pointer hover:ring-2 hover:ring-amber-300 transition-all">
-                          <AvatarImage 
-                            src={filteredLeaderboard[2].photoUrl || undefined} 
-                            alt={`Profile photo of ${filteredLeaderboard[2].username}`}
-                          />
-                          <AvatarFallback>
-                            {filteredLeaderboard[2].username[0].toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </Link>
-                      <h3 className="font-bold text-lg text-white">{filteredLeaderboard[2].username}</h3>
-                      <p className="text-2xl font-bold gold-text">{filteredLeaderboard[2].totalPoints} pts</p>
-                      <p className="text-sm text-white/60">{filteredLeaderboard[2].remainingCount} remaining</p>
-                    </CardContent>
-                  </Card>
-                </div>
-              </div>
-            )}
-
-            {/* Full Rankings */}
             <Card className="navy-card">
-              <CardHeader>
-                <CardTitle className="text-white">Full Rankings</CardTitle>
-              </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {filteredLeaderboard.map((entry, index) => {
                     const rank = index + 1
+                    
+
+                    
                     return (
                       <div
-                        key={entry.id}
-                        className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10 hover:bg-white/10 transition-all"
+                        key={entry.username}
+                        className="flex items-center justify-between p-4 bg-blue-900/90 rounded-lg border border-blue-700/30 hover:bg-blue-800/90 transition-all cursor-pointer"
+                        onClick={() => handleUserClick(entry)}
                       >
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center justify-center">
                             {getRankIcon(rank)}
                           </div>
                           
-                          <Link href={`/u/${entry.username}`}>
-                            <Avatar className="w-12 h-12 cursor-pointer hover:ring-2 hover:ring-amber-300 transition-all">
-                              <AvatarImage 
-                                src={entry.photoUrl || undefined} 
-                                alt={`Profile photo of ${entry.username}`}
-                              />
-                              <AvatarFallback>
-                                {entry.username[0].toUpperCase()}
-                              </AvatarFallback>
-                            </Avatar>
-                          </Link>
+                          <Avatar className="w-12 h-12 hover:ring-2 hover:ring-amber-300 transition-all">
+                            <AvatarImage 
+                              src={entry.photoUrl || undefined} 
+                              alt={`Profile photo of ${entry.username}`}
+                            />
+                            <AvatarFallback>
+                              {entry.username[0].toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
                           
                           <div>
-                            <Link 
-                              href={`/u/${entry.username}`}
-                              className="font-semibold text-lg text-white hover:text-amber-400 transition-colors"
-                            >
+                            <div className="font-semibold text-lg text-white hover:text-amber-400 transition-colors">
                               {entry.username}
-                            </Link>
-                            <p className="text-sm text-white/60">
+                            </div>
+                            <p className="text-sm text-white">
                               {entry.remainingCount} houseguests remaining
                             </p>
                           </div>
                         </div>
 
                         <div className="text-right">
-                          <div className="text-2xl font-bold gold-text">
+                          <div className="text-2xl font-bold text-white">
                             {entry.totalPoints}
                           </div>
-                          <div className="text-sm text-white/60">points</div>
+                          <div className="text-sm text-white">points</div>
                         </div>
                       </div>
                     )
@@ -262,26 +244,38 @@ export default function LeaderboardPage() {
               </CardContent>
             </Card>
 
-            {/* Instructions for new users */}
-            <Card className="navy-card mt-8">
-              <CardContent className="text-center py-6">
-                <h3 className="font-semibold text-white mb-2">
-                  Want to join the competition?
-                </h3>
-                <p className="text-white/80 mb-4">
-                  Pick your 5 favorite houseguests and start earning points for their competition wins!
-                </p>
-                <Link 
-                  href="/welcome"
-                  className="inline-flex items-center px-4 py-2 gold-accent rounded-lg hover:bg-amber-500 transition-colors"
-                >
-                  Get Started
-                </Link>
-              </CardContent>
-            </Card>
+
           </div>
         )}
       </div>
+
+      {/* User Team Popup */}
+      {selectedUser && (
+        <UserTeamPopup
+          isOpen={isPopupOpen}
+          onClose={handleClosePopup}
+          username={selectedUser.username}
+          userPhotoUrl={selectedUser.photoUrl}
+          onEditProfile={handleEditProfile}
+        />
+      )}
+
+      {/* Point Values Popup */}
+      <PointValuesPopup
+        isOpen={isPointValuesOpen}
+        onClose={handleClosePointValues}
+      />
+
+      {/* Edit Profile Popup */}
+      {session?.user && (
+        <EditProfilePopup
+          isOpen={isEditProfileOpen}
+          onClose={handleCloseEditProfile}
+          currentUsername={session.user.name || ''}
+          currentPhotoUrl={session.user.image || undefined}
+          onSave={handleSaveProfile}
+        />
+      )}
     </div>
   )
 }

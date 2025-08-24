@@ -171,8 +171,28 @@ export default function UserProfilePage() {
                           {hg.firstName} {hg.lastName}
                         </CardTitle>
                         <div className="flex justify-center">
-                          <Badge variant={hg.status === 'IN' ? 'default' : 'secondary'}>
-                            {hg.status === 'IN' ? 'In Game' : 'Evicted'}
+                          <Badge 
+                            variant={
+                              hg.status === 'IN' 
+                                ? 'default' 
+                                : hg.eviction && hg.eviction.week >= 8 
+                                  ? 'outline' 
+                                  : 'secondary'
+                            }
+                            className={
+                              hg.status === 'IN' 
+                                ? 'bg-green-100 text-green-800 border-green-200' 
+                                : hg.eviction && hg.eviction.week >= 8 
+                                  ? 'bg-amber-100 text-amber-800 border-amber-200' 
+                                  : 'bg-red-100 text-red-800 border-red-200'
+                            }
+                          >
+                            {hg.status === 'IN' 
+                              ? 'In the House' 
+                              : hg.eviction && hg.eviction.week >= 8 
+                                ? 'In Jury' 
+                                : 'Evicted'
+                            }
                           </Badge>
                         </div>
                       </CardHeader>
@@ -211,8 +231,22 @@ export default function UserProfilePage() {
                         </div>
 
                         {hg.status === 'EVICTED' && hg.eviction && (
-                          <div className="mt-3 p-2 bg-red-50 rounded text-xs text-red-700">
-                            Evicted Week {hg.eviction.week}
+                          <div className="mt-3 p-2 rounded text-xs text-center">
+                            <div className={
+                              hg.eviction.week >= 8 
+                                ? 'bg-amber-50 text-amber-700' 
+                                : 'bg-red-50 text-red-700'
+                            }>
+                              {hg.eviction.week >= 8 
+                                ? `Jury Member - Week ${hg.eviction.week}` 
+                                : `Evicted Week ${hg.eviction.week}`
+                              }
+                              {hg.eviction.vote && (
+                                <div className="text-xs opacity-75">
+                                  Vote: {hg.eviction.vote}
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
                       </CardContent>

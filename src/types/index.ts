@@ -40,6 +40,7 @@ export type Week = {
 
 export type LeaderboardEntry = {
   username: string
+  email: string
   photoUrl?: string
   totalPoints: number
   remainingCount: number
@@ -55,16 +56,12 @@ export const pointsForHG = (hg: Houseguest) => {
   // Nomination survival points (1 point for each week nominated but not evicted)
   const nominationSurvivalPoints = hg.onTheBlockWeeks.length * 1
   
-  // Weekly survival points (1 point for week 1, 2 for week 2, 3 for week 3, etc.)
-  // Calculate based on how many weeks they survived (not including final week)
+  // Weekly survival points (1 point per week survived)
   const totalWeeksSurvived = hg.status === 'EVICTED' 
     ? (hg.eviction?.week || 0) - 1  // Survived until eviction week - 1
-    : 16  // Assuming 16 weeks total, survived until week 15 (no points for final week)
+    : 15  // Assuming 15 weeks total (no points for final week)
   
-  let weeklySurvivalPoints = 0
-  for (let week = 1; week <= totalWeeksSurvived; week++) {
-    weeklySurvivalPoints += week  // Week 1 = 1pt, Week 2 = 2pts, Week 3 = 3pts, etc.
-  }
+  const weeklySurvivalPoints = totalWeeksSurvived * 1  // 1 point per week survived
   
   // Final placement bonuses
   let placementBonus = 0

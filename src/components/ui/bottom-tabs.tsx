@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Users, Trophy, Clock, User } from 'lucide-react'
+import { Home, Users, Trophy, Clock } from 'lucide-react'
 
 const tabs = [
   {
@@ -24,11 +24,6 @@ const tabs = [
     name: 'History',
     href: '/history',
     icon: Clock,
-  },
-  {
-    name: 'Profile',
-    href: '/welcome',
-    icon: User,
   },
 ]
 
