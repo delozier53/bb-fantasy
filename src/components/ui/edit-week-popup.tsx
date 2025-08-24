@@ -135,8 +135,12 @@ export function EditWeekPopup({
               <Select
                 value={formData.nominees?.[0] || 'none'}
                 onValueChange={(value) => {
-                  const nominees = [...(formData.nominees || [])]
-                  nominees[0] = value === 'none' ? '' : value
+                  const currentNominees = formData.nominees || ['', '', '']
+                  const nominees: [string?, string?, string?] = [
+                    value === 'none' ? '' : value,
+                    currentNominees[1] || '',
+                    currentNominees[2] || ''
+                  ]
                   setFormData({ ...formData, nominees })
                 }}
               >
@@ -159,13 +163,45 @@ export function EditWeekPopup({
               <Select
                 value={formData.nominees?.[1] || 'none'}
                 onValueChange={(value) => {
-                  const nominees = [...(formData.nominees || [])]
-                  nominees[1] = value === 'none' ? '' : value
+                  const currentNominees = formData.nominees || ['', '', '']
+                  const nominees: [string?, string?, string?] = [
+                    currentNominees[0] || '',
+                    value === 'none' ? '' : value,
+                    currentNominees[2] || ''
+                  ]
                   setFormData({ ...formData, nominees })
                 }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select second nominee" />
+                </SelectTrigger>
+                <SelectContent className="!bg-gray-100">
+                  <SelectItem value="none">None</SelectItem>
+                  {safeHouseguests.map((hg) => (
+                    <SelectItem key={hg.id} value={hg.id}>
+                      {getHouseguestName(hg.id)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Nominee 3</Label>
+              <Select
+                value={formData.nominees?.[2] || 'none'}
+                onValueChange={(value) => {
+                  const currentNominees = formData.nominees || ['', '', '']
+                  const nominees: [string?, string?, string?] = [
+                    currentNominees[0] || '',
+                    currentNominees[1] || '',
+                    value === 'none' ? '' : value
+                  ]
+                  setFormData({ ...formData, nominees })
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select third nominee" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
                   <SelectItem value="none">None</SelectItem>
