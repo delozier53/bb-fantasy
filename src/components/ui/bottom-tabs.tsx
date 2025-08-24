@@ -1,34 +1,73 @@
 "use client"
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, Users, Trophy, Clock } from 'lucide-react'
 
-const tabs = [
-  {
-    name: 'Home',
-    href: '/',
-    icon: Home,
-  },
-  {
-    name: 'Houseguests',
-    href: '/houseguests',
-    icon: Users,
-  },
-  {
-    name: 'Leaderboard',
-    href: '/leaderboard',
-    icon: Trophy,
-  },
-  {
-    name: 'History',
-    href: '/history',
-    icon: Clock,
-  },
-]
-
 export function BottomTabs() {
   const pathname = usePathname()
+  const [userData, setUserData] = useState<{
+    username?: string
+    picks?: string[]
+  } | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/me')
+        if (response.ok) {
+          const data = await response.json()
+          setUserData(data)
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUserData()
+  }, [])
+
+  // Determine if user has completed their profile
+  const hasCompletedProfile = userData?.username && userData?.picks && userData.picks.length === 5
+
+  // Define tabs based on completion status
+  const tabs = hasCompletedProfile 
+    ? [
+        {
+          name: 'Houseguests',
+          href: '/houseguests',
+          icon: Users,
+        },
+        {
+          name: 'Leaderboard',
+          href: '/leaderboard',
+          icon: Trophy,
+        },
+        {
+          name: 'History',
+          href: '/history',
+          icon: Clock,
+        },
+      ]
+    : [
+        {
+          name: 'Home',
+          href: '/',
+          icon: Home,
+        },
+      ]
+
+  // Don't show tabs while loading, if user is not authenticated, or on public routes
+  const publicRoutes = ['/', '/welcome', '/auth/signin', '/auth/verify-request']
+  const isPublicRoute = publicRoutes.includes(pathname)
+  
+  if (loading || !userData || isPublicRoute) {
+    return null
+  }
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 safe-bottom">

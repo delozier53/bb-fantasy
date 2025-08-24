@@ -6,6 +6,7 @@ import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppHeader } from "@/components/ui/app-header";
 import { BottomTabs } from "@/components/ui/bottom-tabs";
+import { RouteGuard } from "@/components/providers/route-guard";
 
 
 
@@ -48,11 +49,12 @@ export default function RootLayout({
       <body className={`${inter.className} antialiased`}>
         <QueryProvider>
           <AuthProvider>
-            <AppHeader />
-            {children}
-            <BottomTabs />
-            <Toaster />
-
+            <RouteGuard>
+              <AppHeader />
+              {children}
+              <BottomTabs />
+              <Toaster />
+            </RouteGuard>
           </AuthProvider>
         </QueryProvider>
       </body>
