@@ -108,14 +108,14 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label htmlFor="hohWinner">HOH Winner</Label>
               <Select
-                value={formData.hohWinnerId || ''}
-                onValueChange={(value) => setFormData({ ...formData, hohWinnerId: value })}
+                value={formData.hohWinnerId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, hohWinnerId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select HOH winner" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}
@@ -133,10 +133,10 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label>Nominee 1</Label>
               <Select
-                value={formData.nominees?.[0] || ''}
+                value={formData.nominees?.[0] || 'none'}
                 onValueChange={(value) => {
                   const nominees = [...(formData.nominees || [])]
-                  nominees[0] = value
+                  nominees[0] = value === 'none' ? '' : value
                   setFormData({ ...formData, nominees })
                 }}
               >
@@ -144,7 +144,7 @@ export function EditWeekPopup({
                   <SelectValue placeholder="Select first nominee" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}
@@ -157,10 +157,10 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label>Nominee 2</Label>
               <Select
-                value={formData.nominees?.[1] || ''}
+                value={formData.nominees?.[1] || 'none'}
                 onValueChange={(value) => {
                   const nominees = [...(formData.nominees || [])]
-                  nominees[1] = value
+                  nominees[1] = value === 'none' ? '' : value
                   setFormData({ ...formData, nominees })
                 }}
               >
@@ -168,7 +168,7 @@ export function EditWeekPopup({
                   <SelectValue placeholder="Select second nominee" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}
@@ -197,14 +197,14 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label htmlFor="povWinner">POV Winner</Label>
               <Select
-                value={formData.povWinnerId || ''}
-                onValueChange={(value) => setFormData({ ...formData, povWinnerId: value })}
+                value={formData.povWinnerId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, povWinnerId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select POV winner" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}
@@ -228,18 +228,20 @@ export function EditWeekPopup({
                 <div className="space-y-2">
                   <Label>Removed Nominee</Label>
                   <Select
-                    value={formData.povRemovedNomineeId || ''}
-                    onValueChange={(value) => setFormData({ ...formData, povRemovedNomineeId: value })}
+                    value={formData.povRemovedNomineeId || 'none'}
+                    onValueChange={(value) => setFormData({ ...formData, povRemovedNomineeId: value === 'none' ? '' : value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select removed nominee" />
                     </SelectTrigger>
                     <SelectContent className="!bg-gray-100">
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {formData.nominees?.map((nomineeId) => (
-                        <SelectItem key={nomineeId} value={nomineeId}>
-                          {getHouseguestName(nomineeId)}
-                        </SelectItem>
+                        nomineeId && (
+                          <SelectItem key={nomineeId} value={nomineeId}>
+                            {getHouseguestName(nomineeId)}
+                          </SelectItem>
+                        )
                       ))}
                     </SelectContent>
                   </Select>
@@ -248,14 +250,14 @@ export function EditWeekPopup({
                 <div className="space-y-2">
                   <Label>Replacement Nominee</Label>
                   <Select
-                    value={formData.povReplacementId || ''}
-                    onValueChange={(value) => setFormData({ ...formData, povReplacementId: value })}
+                    value={formData.povReplacementId || 'none'}
+                    onValueChange={(value) => setFormData({ ...formData, povReplacementId: value === 'none' ? '' : value })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select replacement nominee" />
                     </SelectTrigger>
                     <SelectContent className="!bg-gray-100">
-                      <SelectItem value="">None</SelectItem>
+                      <SelectItem value="none">None</SelectItem>
                       {safeHouseguests.map((hg) => (
                         <SelectItem key={hg.id} value={hg.id}>
                           {getHouseguestName(hg.id)}
@@ -286,14 +288,14 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label htmlFor="blockbusterWinner">Blockbuster Winner</Label>
               <Select
-                value={formData.blockbusterWinnerId || ''}
-                onValueChange={(value) => setFormData({ ...formData, blockbusterWinnerId: value })}
+                value={formData.blockbusterWinnerId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, blockbusterWinnerId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Blockbuster winner" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}
@@ -311,14 +313,14 @@ export function EditWeekPopup({
             <div className="space-y-2">
               <Label htmlFor="evictedNominee">Evicted Houseguest</Label>
               <Select
-                value={formData.evictedNomineeId || ''}
-                onValueChange={(value) => setFormData({ ...formData, evictedNomineeId: value })}
+                value={formData.evictedNomineeId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, evictedNomineeId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select evicted houseguest" />
                 </SelectTrigger>
                 <SelectContent className="!bg-gray-100">
-                  <SelectItem value="">None</SelectItem>
+                  <SelectItem value="none">None</SelectItem>
                   {safeHouseguests.map((hg) => (
                     <SelectItem key={hg.id} value={hg.id}>
                       {getHouseguestName(hg.id)}

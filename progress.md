@@ -93,29 +93,70 @@
 - [x] Comprehensive README with deployment instructions
 - [x] Environment configuration template
 
-## Current Status: All Phases Complete - Production Ready! 🎉
+## Phase 5: Enhanced Features & UI Improvements - COMPLETED ✅
 
-### Final Project Stats
-- **Total Features**: All planned features implemented (M0-M6)
+### 5.1 Leaderboard Enhancements
+- [x] Made all text on blue cards white (place number, username, houseguests remaining, points)
+- [x] Removed "Get Started" box from bottom of leaderboard screen
+- [x] Removed "Full Rankings" title from white card
+- [x] Added user team popup functionality when clicking on users
+- [x] Added "Point Values" button with popup explaining point system
+- [x] Placed search bar and "Point Values" button on same line
+- [x] Updated point system icons (HOH: Key, POV: CircleSlash, BB: RotateCcw)
+- [x] Fixed user team popup text ("X houseguests still playing")
+- [x] Left-justified user names in team popup
+
+### 5.2 Edit Profile Functionality
+- [x] Added "Edit Profile" button for current user on leaderboard
+- [x] Created EditProfilePopup component with username and photo upload
+- [x] Implemented profile update API endpoint (`PUT /api/me`)
+- [x] Added username uniqueness validation
+- [x] Moved edit button to user's team popup for better UX
+- [x] Fixed user identification to use email instead of username for consistency
+
+### 5.3 Admin History Management
+- [x] Added admin edit functionality for History screen
+- [x] Created EditWeekPopup component with comprehensive form
+- [x] Implemented admin API endpoint (`PUT /api/admin/week/[n]`)
+- [x] Added admin-only access (restricted to joshuamdelozier@gmail.com)
+- [x] Added grey background to dropdown menus in edit popup
+- [x] Fixed runtime errors with houseguests.map function
+- [x] Added global CSS override for Radix UI select backgrounds
+
+### 5.4 Navigation Improvements
+- [x] Removed Profile tab from bottom navigation bar
+- [x] Cleaned up navigation with 4 essential tabs (Home, Houseguests, Leaderboard, History)
+- [x] Improved spacing and layout of bottom navigation
+
+### 5.5 Data Accuracy & API Improvements
+- [x] Updated houseguest data to use accurate game information from weeks data
+- [x] Fixed points calculation to match frontend logic
+- [x] Updated status badges to show "In the House", "In Jury", "Not in Jury"
+- [x] Added email field to leaderboard API response for user identification
+- [x] Fixed API route params to use awaited params (Next.js 15 compatibility)
+
+## Current Status: Enhanced Features Complete - Production Ready! 🎉
+
+### Latest Project Stats
+- **Total Features**: All planned features + enhanced UI/UX improvements
 - **Code Quality**: 100% lint-free, TypeScript strict mode
 - **Accessibility**: WCAG 2.1 compliant with alt text, ARIA labels, keyboard navigation
 - **Performance**: Loading skeletons, rate limiting, optimized queries
 - **Security**: Input validation, rate limiting, role-based access control
 - **Documentation**: Complete README, API documentation, deployment guides
 
-### Issues Encountered & Resolved
-- Had to install nodemailer for email provider ✅
-- Fixed TypeScript errors with port parsing and session types ✅
-- Generated Prisma client before build ✅
-- Fixed ESLint apostrophe error in page content ✅
-- Added proper TypeScript types for NextAuth session ✅
-- Added missing shadcn/ui components (tabs, switch, textarea) ✅
-- Resolved all linting warnings and errors ✅
+### Recent Issues Encountered & Resolved
+- Fixed houseguests.map runtime error in EditWeekPopup ✅
+- Added global CSS override for Radix UI select backgrounds ✅
+- Updated API routes to use awaited params for Next.js 15 ✅
+- Fixed user identification to use email instead of username ✅
+- Resolved dropdown background color issues with !important CSS rules ✅
 
 ### Ready for Deployment
 The application is now production-ready with:
 - Complete feature set for Big Brother Season 27 fantasy league
-- Professional UI/UX with loading states and error handling
+- Enhanced UI/UX with improved leaderboard and admin functionality
+- Professional edit profile and admin week management features
 - Comprehensive accessibility support
 - Security hardening and rate limiting
 - Database backup and CI/CD infrastructure
