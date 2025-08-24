@@ -19,6 +19,7 @@ export default function HistoryPage() {
   const [houseguestsMap, setHouseguestsMap] = useState<Record<string, { firstName: string; lastName: string }>>({})
   const [selectedWeek, setSelectedWeek] = useState<Week | null>(null)
   const [isEditPopupOpen, setIsEditPopupOpen] = useState(false)
+  const [creatingWeek, setCreatingWeek] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,6 +95,41 @@ export default function HistoryPage() {
     }
   }
 
+  const handleCreateNewWeek = async () => {
+    setCreatingWeek(true)
+    
+    try {
+      const response = await fetch('/api/admin/week/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create new week')
+      }
+
+      const newWeek = await response.json()
+      
+      // Refresh the weeks data
+      const weeksResponse = await fetch('/api/history?desc=1')
+      if (weeksResponse.ok) {
+        const weeksData = await weeksResponse.json()
+        setWeeks(weeksData)
+      }
+
+      // Open the edit popup for the new week
+      setSelectedWeek(newWeek)
+      setIsEditPopupOpen(true)
+    } catch (error) {
+      console.error('Error creating new week:', error)
+      alert('Failed to create new week. Please try again.')
+    } finally {
+      setCreatingWeek(false)
+    }
+  }
+
   // Check if current user is admin
   const isAdmin = session?.user?.email === 'joshuamdelozier@gmail.com'
 
@@ -153,6 +189,19 @@ export default function HistoryPage() {
           <h1 className="text-3xl font-bold text-white mb-4">
             Season History
           </h1>
+          
+          {/* Admin Create New Week Button */}
+          {isAdmin && (
+            <div className="mt-6">
+              <Button
+                onClick={handleCreateNewWeek}
+                className="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2"
+                disabled={creatingWeek}
+              >
+                {creatingWeek ? 'Creating...' : 'Create New Week'}
+              </Button>
+            </div>
+          )}
         </div>
 
         {weeks.length === 0 ? (
